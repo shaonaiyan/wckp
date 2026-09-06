@@ -83,6 +83,95 @@ export class GameState {
     SaveManager.save(this);
   }
 
+  // 恢复存档 (Prototype 0.2)
+  loadFromSave() {
+    try {
+      const data = SaveManager.load();
+      if (!data) return false;
+
+      // 恢复种子与随机数发生器
+      this.initialSeed = data.seed || this.initialSeed;
+      this.randomManager = new RandomManager(this.initialSeed);
+
+      // 基础流程状态
+      this.turn = data.turn || 1;
+      this.phase = data.phase || 'PLAY_CARD';
+      this.isGameOver = !!data.isGameOver;
+      this.gameOutcome = data.gameOutcome || null;
+      this.defeatReason = data.defeatReason || null;
+      this.godMode = !!data.godMode;
+
+      // 恢复宏观健康度
+      if (data.stats) {
+        this.stateManager.treasury = data.stats.treasury;
+        this.stateManager.morale = data.stats.morale;
+        this.stateManager.military = data.stats.military;
+        this.stateManager.court = data.stats.court;
+      }
+
+      // 恢复牌库与手牌
+      this.deckManager.drawPile = Array.isArray(data.drawPile) ? [...data.drawPile] : [];
+      this.deckManager.discardPile = Array.isArray(data.discardPile) ? [...data.discardPile] : [];
+      this.deckManager.hand = Array.isArray(data.hand) ? [...data.hand] : [];
+      this.deckManager.keptCard = data.keptCard ? { ...data.keptCard } : null;
+      this.deckManager.handBeforePlay = this.deckManager.hand.map(c => ({ ...c }));
+      if (data.cardStats) {
+        this.deckManager.cardStats = { ...data.cardStats };
+      }
+
+      // 恢复局势
+      this.situationManager.activeSituations = Array.isArray(data.activeSituations) ? [...data.activeSituations] : [];
+      this.situationManager.deferredQueue = Array.isArray(data.deferredQueue) ? [...data.deferredQueue] : [];
+      if (data.situationHistory) {
+        this.situationManager.situationHistory = { ...data.situationHistory };
+      }
+
+      // 恢复后遗状态与年度国策
+      this.residueManager.activeResidues = Array.isArray(data.activeResidues) ? [...data.activeResidues] : [];
+      this.policyManager.activePolicies = Array.isArray(data.activePolicies) ? [...data.activePolicies] : [];
+      this.policyManager.pendingOptions = null;
+
+      // 恢复史册编年
+      this.historyManager.eraName = data.eraName || '永和';
+      this.historyManager.entries = Array.isArray(data.historyEntries) ? [...data.historyEntries] : [];
+
+      // 恢复遥测数据
+      if (data.turnLogs) this.telemetryManager.turnLogs = [...data.turnLogs];
+      if (data.gameMetadata) this.telemetryManager.gameMetadata = { ...data.gameMetadata };
+      if (data.qualityCounts) this.telemetryManager.qualityCounts = { ...data.qualityCounts };
+      if (data.totalNeglectEscalations !== undefined) {
+        this.telemetryManager.totalNeglectEscalations = data.totalNeglectEscalations;
+      }
+
+      // 重置当轮选择状态
+      this.selectedCardId = null;
+      this.selectedSituationId = null;
+      this.autoTargeted = false;
+      this.lastActionResult = null;
+      this.pendingNeglectLogs = [];
+
+      this.notifyStateChanged();
+
+      // 如果当前处于年度定策阶段，生成并唤出候选
+      if (this.phase === 'ANNUAL_POLICY') {
+        const draftOptions = this.policyManager.generateDraftOptions();
+        if (typeof this.onAnnualDraft === 'function') {
+          this.onAnnualDraft(draftOptions);
+        }
+      }
+
+      // 如果存档已终局，触发终局弹窗
+      if (this.isGameOver && typeof this.onGameOver === 'function') {
+        this.onGameOver({ outcome: this.gameOutcome, reason: this.defeatReason });
+      }
+
+      return true;
+    } catch (e) {
+      console.error('Failed to load from save:', e);
+      return false;
+    }
+  }
+
   getCurrentTimeText() {
     return this.historyManager.getYearSeasonText(this.turn);
   }

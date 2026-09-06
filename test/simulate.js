@@ -225,4 +225,32 @@ assert(Array.isArray(firstLog.hand_before_play) && firstLog.hand_before_play.len
 assert(firstLog.interaction_quality !== undefined, '包含 interaction_quality 评级');
 assert(firstLog.meaningful_choices !== undefined, '包含 meaningful_choices 选项统计');
 
+// ---------------- 测试 8: 存档与 loadFromSave 恢复完整性验证 ----------------
+console.log('\n--- 测试 8: 存档与 loadFromSave 恢复完整性验证 ---');
+const saveGame = new GameState('save_test_seed');
+saveGame.startNewGame('save_test_seed', '泰安');
+saveGame.selectCard(saveGame.deckManager.hand[0].id);
+saveGame.playSelectedCard();
+saveGame.adjournCourt();
+
+// 此时 saveGame 已进入 turn 2
+assert(saveGame.turn === 2, '当前处于第 2 季');
+const statsBeforeSave = saveGame.stateManager.getStats();
+const handBeforeSave = [...saveGame.deckManager.hand.map(c => c.id)];
+
+// 创建全新实例并从存档恢复
+const restoredGame = new GameState();
+const loadSuccess = restoredGame.loadFromSave();
+assert(loadSuccess === true, 'loadFromSave() 成功返回 true');
+assert(restoredGame.turn === 2, '成功恢复回合数 (turn === 2)');
+assert(restoredGame.historyManager.eraName === '泰安', '成功恢复年号【泰安】');
+assert(restoredGame.stateManager.treasury === statsBeforeSave.treasury, '成功恢复国库健康度');
+assert(restoredGame.stateManager.morale === statsBeforeSave.morale, '成功恢复民心健康度');
+assert(restoredGame.stateManager.military === statsBeforeSave.military, '成功恢复军势健康度');
+assert(restoredGame.stateManager.court === statsBeforeSave.court, '成功恢复朝局健康度');
+assert(restoredGame.deckManager.hand.length === 5, '成功恢复 5 张手牌');
+assert(restoredGame.deckManager.hand.map(c => c.id).join(',') === handBeforeSave.join(','), '手牌内容与顺序完全一致');
+assert(restoredGame.historyManager.getAllEntries().length === saveGame.historyManager.getAllEntries().length, '历史记录条数完整恢复');
+assert(restoredGame.telemetryManager.turnLogs.length === saveGame.telemetryManager.turnLogs.length, '遥测日志完整恢复');
+
 console.log(`\n🎉 全部 Prototype 0.2 核心自动化测试通过：${passedTests}/${totalTests} PASS！`);
