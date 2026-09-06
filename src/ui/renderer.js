@@ -1,336 +1,223 @@
-// Prototype 0.2 主界面渲染器 (UIRenderer)
-// 强调局势三阶段印记、可行方向、卡牌人格、自动索敌锁定与代价预告
+// 《一朝天子》Prototype 0.3 御案主界面渲染器 (UIRenderer)
+// PC 16:9 沉浸御案风格：深木宣纸、三大头条纪事、朝野名宿印记、五大御前奏折与朱批印玺 (Section 49~55)
 
 import { BALANCE } from '../data/balance.js';
-import { InteractionResolver } from '../engine/interactionResolver.js';
+import { CHARACTER_TRAITS } from '../data/traits.js';
 
 export class UIRenderer {
-  constructor(game, container) {
+  constructor(game, container, characterPanel) {
     this.game = game;
     this.container = container;
+    this.characterPanel = characterPanel;
   }
 
   render() {
     this.renderTopBar();
-    this.renderResiduesAndPolicies();
-    this.renderSituations();
-    this.renderHand();
-    this.renderActionBar();
-    this.renderHistorySidebar();
+    this.renderHeadlines();
+    this.renderCharactersSidebar();
+    this.renderProposals();
+    this.renderSeasonAmbience();
   }
 
-  // 顶部四项健康度与纪年
+  // 1. 顶部王朝纪年、帝储春秋与宏观背景属性 (Section 50)
   renderTopBar() {
-    const timeEl = document.getElementById('dynasty-time');
-    const eraEl = document.getElementById('dynasty-era');
-    if (timeEl) timeEl.textContent = this.game.getCurrentTimeText();
-    if (eraEl) eraEl.textContent = `治世第 ${this.game.turn} / ${BALANCE.MAX_TURNS} 季`;
+    const world = this.game.world;
+    const emp = world.royalFamilyManager.emperor;
+    const heir = world.royalFamilyManager.getHeir();
+    const timeText = world.historyManager.getYearSeasonText(world.turn, emp.eraName);
+    const healthInfo = world.royalFamilyManager.getEmperorHealthInfo();
 
-    const stats = this.game.stateManager.getStats();
-    const tiers = this.game.stateManager.getAllTiers();
-
-    ['treasury', 'morale', 'military', 'court'].forEach(key => {
-      const tier = tiers[key];
-      const val = stats[key];
-      const tierEl = document.getElementById(`stat-tier-${key}`);
-      const barEl = document.getElementById(`stat-bar-${key}`);
-      const tooltipEl = document.getElementById(`stat-exact-${key}`);
-
-      if (tierEl) {
-        tierEl.textContent = tier.label;
-        tierEl.className = `stat-tier ${tier.css}`;
-      }
-      if (barEl) {
-        barEl.style.width = `${val}%`;
-        barEl.className = `stat-bar-fill ${tier.css}`;
-      }
-      if (tooltipEl) {
-        tooltipEl.textContent = `${val}/100`;
-      }
-    });
-  }
-
-  // 渲染后遗状态 (Residues) 与年度国策 (Policies) 徽章
-  renderResiduesAndPolicies() {
-    const listEl = document.getElementById('active-states-list');
-    if (!listEl) return;
-    listEl.innerHTML = '';
-
-    const residues = this.game.residueManager.getActive();
-    const policies = this.game.policyManager.getActive();
-
-    if (residues.length === 0 && policies.length === 0) {
-      listEl.innerHTML = '<span class="empty-state-hint">案头清简 · 暂无沉疴与国策羁绊</span>';
-      return;
+    // 纪年与天家信息
+    const timeEl = document.getElementById('dynasty-time-text');
+    if (timeEl) {
+      timeEl.innerHTML = `<strong>${emp.dynasty}</strong> · <span class="era-badge">${timeText}</span>`;
     }
 
-    // 年度国策徽章
-    policies.forEach(p => {
-      const badge = document.createElement('div');
-      badge.className = 'state-badge badge-policy';
-      badge.innerHTML = `
-        <span class="badge-tag">国策</span>
-        <span class="badge-title">【${p.title}】</span>
-        <div class="state-popover">
-          <div class="popover-title">国策：${p.name}</div>
-          <div class="popover-desc">${p.description}</div>
-        </div>
+    const emperorEl = document.getElementById('emperor-info-text');
+    if (emperorEl) {
+      emperorEl.innerHTML = `
+        <span class="info-label">圣躬：</span><strong>${emp.age}岁</strong>
+        <span class="health-badge health-${emp.healthLevel}" title="${healthInfo.desc}">【${healthInfo.label}】</span>
+        <span class="info-divider">|</span>
+        <span class="info-label">在位：</span><strong>${emp.yearsReigning}年</strong>
+        <span class="info-divider">|</span>
+        <span class="info-label">储嗣：</span><strong>${heir ? `${heir.title}【${heir.name}】(${heir.age}岁)` : '未立'}</strong>
       `;
-      listEl.appendChild(badge);
-    });
+    }
 
-    // 后遗状态徽章
-    residues.forEach(r => {
-      const badge = document.createElement('div');
-      badge.className = `state-badge badge-residue residue-${r.type}`;
-      badge.innerHTML = `
-        <span class="badge-tag">后遗</span>
-        <span class="badge-title">【${r.name} · ${r.duration}季】</span>
-        <div class="state-popover">
-          <div class="popover-title">后遗：${r.name} (余${r.duration}季)</div>
-          <div class="popover-desc">${r.description}</div>
-        </div>
-      `;
-      listEl.appendChild(badge);
-    });
+    // 宏观四维：降级为词汇描述 + 很弱的背景条 (Section 41 & 50)
+    this.renderMacroStat('treasury', world.macroStats.treasury, '国库');
+    this.renderMacroStat('livelihood', world.macroStats.livelihood, '民生');
+    this.renderMacroStat('might', world.macroStats.might, '国势');
+    this.renderMacroStat('authority', world.macroStats.authority, '皇威');
   }
 
-  // 渲染场上天下局势 (三阶段印记 ●○○ + 可行方向)
-  renderSituations() {
-    const container = document.getElementById('situations-board');
+  renderMacroStat(statKey, val, name) {
+    const tiers = BALANCE.STAT_DESCRIPTIONS[statKey] || [];
+    let tier = tiers.find(t => val >= t.min && val <= t.max) || tiers[tiers.length - 1];
+
+    const labelEl = document.getElementById(`stat-desc-${statKey}`);
+    const barEl = document.getElementById(`stat-bar-${statKey}`);
+
+    if (labelEl) {
+      labelEl.textContent = tier ? tier.label : '尚可';
+      labelEl.title = tier ? `${name}：${tier.desc} (数值：${val})` : '';
+    }
+    if (barEl) {
+      barEl.style.width = `${Math.max(5, Math.min(100, val))}%`;
+    }
+  }
+
+  // 2. 中央三大御前头条 (天下、朝堂、宫中) (Section 23 & 50)
+  renderHeadlines() {
+    const container = document.getElementById('headlines-container');
     if (!container) return;
     container.innerHTML = '';
 
-    const situations = this.game.situationManager.getActive();
-    const selectedCard = this.getSelectedCard();
+    const headlines = this.game.world.newsManager.currentHeadlines;
+    const catNames = { realm: '天下大势', court: '朝堂章奏', palace: '禁中文华' };
 
-    // 预判当前选中卡牌的目标分析
-    let cardAnalysis = null;
-    if (selectedCard) {
-      cardAnalysis = InteractionResolver.analyzeCardOptions(
-        selectedCard,
-        this.game.stateManager,
-        situations,
-        this.game.policyManager,
-        this.game.residueManager
-      );
-    }
+    headlines.forEach(news => {
+      const card = document.createElement('div');
+      card.className = `headline-card headline-${news.category || 'realm'}`;
 
-    situations.forEach(sit => {
-      const cardEl = document.createElement('div');
-      cardEl.className = `situation-card situation-${sit.category}`;
-
-      const isTargeted = this.game.selectedSituationId === sit.id;
-      if (isTargeted) cardEl.classList.add('selected');
-
-      // 自动索敌或多目标合法判断
-      let matchInfo = null;
-      if (cardAnalysis && cardAnalysis.matches) {
-        matchInfo = cardAnalysis.matches.find(m => m.situation.id === sit.id);
+      let charBadge = '';
+      if (news.character) {
+        charBadge = `<span class="headline-char-tag">涉及名宿：${news.character.name}</span>`;
       }
 
-      if (matchInfo) {
-        cardEl.classList.add('applicable-target');
-        if (this.game.autoTargeted && isTargeted) {
-          cardEl.classList.add('auto-locked');
-        }
-      }
+      card.innerHTML = `
+        <div class="headline-type-badge">${catNames[news.category] || '天下纪事'}</div>
+        <div class="headline-title">${news.title}</div>
+        <div class="headline-content">${news.text}</div>
+        ${charBadge ? `<div class="headline-footer">${charBadge}</div>` : ''}
+      `;
+      container.appendChild(card);
+    });
+  }
 
-      // 三阶段压力印记
-      let stageDots = '';
-      const stageConfig = BALANCE.SITUATION_STAGES[sit.stage] || { name: '稳定', symbol: '○○○' };
-      for (let i = 1; i <= (sit.maxStage || 3); i++) {
-        const filled = i <= sit.stage;
-        stageDots += `<span class="stage-pip ${filled ? 'active' : ''}"></span>`;
-      }
+  // 3. 屏幕一侧：当前 5~8 名朝野重要人物印章卡 (Section 51)
+  renderCharactersSidebar() {
+    const container = document.getElementById('characters-list');
+    if (!container) return;
+    container.innerHTML = '';
 
-      // 阶段描述与标题
-      const profile = (sit.stageProfiles && sit.stageProfiles[sit.stage])
-        ? sit.stageProfiles[sit.stage]
-        : { name: sit.name, desc: sit.description };
+    const characters = this.game.world.characterManager.getActive();
 
-      const categoryLabel = sit.category === 'opportunity'
-        ? '机会'
-        : (sit.category === 'crisis' ? '重大危机' : '政患');
+    characters.forEach(char => {
+      const isFollowed = this.game.world.characterManager.isFollowed(char.id);
+      const card = document.createElement('div');
+      card.className = `character-card ${isFollowed ? 'is-followed' : ''}`;
 
-      // 可行方向提示标签
-      const hintsHtml = (sit.directionHints || []).map(h => `<span class="dir-hint">${h}</span>`).join(' ');
+      // 性格标签
+      const traitsHtml = char.traits.map(tKey => {
+        const def = CHARACTER_TRAITS[tKey] || { name: tKey };
+        return `<span class="trait-tag">${def.name}</span>`;
+      }).join('');
 
-      // 若与选中卡牌匹配，展示评级标签
-      let qualityBadge = '';
-      if (matchInfo) {
-        const q = matchInfo.evalResult.quality;
-        const qConfig = BALANCE.INTERACTION_QUALITIES[q] || { label: q, symbol: '•' };
-        qualityBadge = `<div class="target-eval-badge quality-${q}">${qConfig.symbol} ${qConfig.label}</div>`;
-      }
-
-      cardEl.innerHTML = `
-        <div class="sit-header">
-          <span class="sit-tag tag-${sit.category}">${categoryLabel} · ${stageConfig.name}</span>
-          <div class="sit-pips-wrap" title="阶段等次">${stageDots}</div>
+      card.innerHTML = `
+        <div class="char-avatar-seal">
+          <div class="seal-inner">${char.name.slice(0, 1)}</div>
+          ${char.hasNewEvent ? '<div class="ink-dot-indicator" title="此公有新近重大章奏变故"></div>' : ''}
         </div>
-        <div class="sit-name">【${sit.name}】</div>
-        <div class="sit-subname">${profile.name}</div>
-        <div class="sit-desc">${profile.desc}</div>
-        <div class="sit-directions-bar">
-          <div class="dir-label">可行方向：</div>
-          <div class="dir-list">${hintsHtml}</div>
+        <div class="char-summary">
+          <div class="char-header-line">
+            <span class="char-name">${char.name}</span>
+            <span class="char-age">${char.age}岁</span>
+            <button class="char-star-btn ${isFollowed ? 'active' : ''}" data-id="${char.id}" title="关注此人">
+              ${isFollowed ? '★' : '☆'}
+            </button>
+          </div>
+          <div class="char-office">${char.office}</div>
+          <div class="char-traits">${traitsHtml}</div>
+          <div class="char-state-quote">${char.stateQuote || char.initialQuote}</div>
         </div>
-        ${qualityBadge}
-        ${this.game.autoTargeted && isTargeted ? '<div class="auto-target-indicator">◈ 已自动锁定目标</div>' : ''}
       `;
 
-      cardEl.addEventListener('click', () => {
-        if (this.game.phase === 'PLAY_CARD') {
-          this.game.selectSituation(sit.id);
+      // 关注按钮事件
+      const starBtn = card.querySelector('.char-star-btn');
+      starBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.game.toggleFollowCharacter(char.id);
+      });
+
+      // 点击展开人物详情与生平纪事弹窗
+      card.addEventListener('click', () => {
+        if (this.characterPanel) {
+          this.characterPanel.show(char.id);
         }
       });
 
-      container.appendChild(cardEl);
+      container.appendChild(card);
     });
-
-    // 补充留白
-    const emptyCount = BALANCE.MAX_ACTIVE_SITUATIONS - situations.length;
-    for (let i = 0; i < emptyCount; i++) {
-      const placeholder = document.createElement('div');
-      placeholder.className = 'situation-placeholder';
-      placeholder.innerHTML = '<span>案头无急政 · 暂安</span>';
-      container.appendChild(placeholder);
-    }
   }
 
-  // 渲染底部手牌 (5张折子奏折)
-  renderHand() {
-    const handContainer = document.getElementById('hand-cards');
-    if (!handContainer) return;
-    handContainer.innerHTML = '';
+  // 4. 底部御前 5 份奏折与朱批 (Section 52 & 53)
+  renderProposals() {
+    const container = document.getElementById('proposals-container');
+    if (!container) return;
+    container.innerHTML = '';
 
-    const hand = this.game.deckManager.hand;
-    const selectedId = this.game.selectedCardId;
-    const keptCard = this.game.deckManager.keptCard;
-    const isPostPlay = this.game.phase === 'POST_PLAY';
+    const proposals = this.game.world.proposalManager.currentProposals;
+    const selectedId = this.game.selectedProposalId;
 
-    hand.forEach(card => {
-      const cardEl = document.createElement('div');
-      cardEl.className = `hand-card card-cat-${card.category}`;
-      if (selectedId === card.id) cardEl.classList.add('selected');
-      if (card.isKeptFromPrev) cardEl.classList.add('kept-from-prev');
+    proposals.forEach(prop => {
+      const isSelected = selectedId === prop.id;
+      const isKept = this.game.world.proposalManager.keptProposal && this.game.world.proposalManager.keptProposal.id === prop.id;
 
-      const isKept = keptCard && keptCard.id === card.id;
-      if (isKept) cardEl.classList.add('marked-to-keep');
+      const card = document.createElement('div');
+      card.className = `proposal-card ${isSelected ? 'selected' : ''} ${isKept ? 'is-kept' : ''}`;
 
-      // 印章
-      let sealTag = '';
-      if (card.isKeptFromPrev) {
-        sealTag = '<span class="card-seal-tag seal-past">上季遗策</span>';
-      }
-      if (isKept) {
-        sealTag += '<span class="card-seal-tag seal-keep">留待下朝</span>';
-      }
-
-      // 卡牌标签徽章
-      const tagsHtml = card.tags.map(t => `<span class="card-tag-pill">${BALANCE.TAG_NAMES[t] || t}</span>`).join('');
-
-      cardEl.innerHTML = `
-        <div class="card-spine"></div>
-        <div class="card-content-wrap">
-          ${isPostPlay ? `
-            <div class="quick-keep-bar">
-              <button class="btn-quick-keep ${isKept ? 'active' : ''}">
-                ${isKept ? '已留' : '留'}
-              </button>
-            </div>
-          ` : ''}
-          <div class="card-top-row">
-            <div class="card-tags-list">${tagsHtml}</div>
-            ${sealTag}
-          </div>
-          <div class="card-title">${card.name}</div>
-          <div class="card-personality">${card.personality || '中正平允'}</div>
-          <div class="card-summary">${card.description}</div>
+      card.innerHTML = `
+        <div class="proposal-source-badge">${prop.sourceDepartment}</div>
+        <div class="proposal-title">${prop.title}</div>
+        <div class="proposal-desc">${prop.description}</div>
+        <div class="proposal-consequence">
+          <strong>直接后果：</strong>${prop.visibleConsequences}
+        </div>
+        <div class="proposal-card-actions">
+          <button class="wood-btn btn-xs btn-keep-proposal ${isKept ? 'active' : ''}">
+            ${isKept ? '已留中待议' : '留中'}
+          </button>
         </div>
       `;
 
-      if (!isPostPlay) {
-        cardEl.addEventListener('click', () => {
-          this.game.selectCard(card.id);
-        });
-      } else {
-        const keepBtn = cardEl.querySelector('.btn-quick-keep');
-        if (keepBtn) {
-          keepBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.game.toggleKeepCard(card.id);
-          });
-        }
-        cardEl.addEventListener('click', () => {
-          this.game.toggleKeepCard(card.id);
-        });
-      }
+      // 点击留中待议
+      const keepBtn = card.querySelector('.btn-keep-proposal');
+      keepBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.game.toggleKeepProposal(prop.id);
+      });
 
-      handContainer.appendChild(cardEl);
+      // 点选奏折
+      card.addEventListener('click', () => {
+        this.game.selectProposal(prop.id);
+      });
+
+      container.appendChild(card);
     });
-  }
 
-  // 渲染操作控制栏与预期后果预告
-  renderActionBar() {
+    // 更新底部朱批与退朝按钮状态 (Section 53 & 54)
     const playBtn = document.getElementById('btn-play-card');
     const adjournBtn = document.getElementById('btn-adjourn-court');
-    const hintEl = document.getElementById('action-hint-text');
-
-    const selectedCard = this.getSelectedCard();
-    const isPostPlay = this.game.phase === 'POST_PLAY';
-
-    if (hintEl) {
-      if (this.game.phase === 'PLAY_CARD') {
-        if (!selectedCard) {
-          hintEl.innerHTML = '请挑选案头奏折批复施行。<strong>每季仅可行一策</strong>。';
-        } else {
-          const analysis = InteractionResolver.analyzeCardOptions(
-            selectedCard,
-            this.game.stateManager,
-            this.game.situationManager.getActive(),
-            this.game.policyManager,
-            this.game.residueManager
-          );
-
-          const targetSituation = this.game.selectedSituationId
-            ? this.game.situationManager.getActive().find(s => s.id === this.game.selectedSituationId)
-            : analysis.autoTarget;
-
-          if (targetSituation) {
-            const q = analysis.bestQuality;
-            const qConfig = BALANCE.INTERACTION_QUALITIES[q] || { label: q };
-            hintEl.innerHTML = `将施策于：<strong>【${targetSituation.name}】</strong> (评级：<span class="quality-text-${q}">${qConfig.label}</span>) ── 预期后果：${analysis.costPreview}`;
-          } else if (analysis.validTargets.length > 1) {
-            hintEl.innerHTML = `【${selectedCard.name}】可用于多个局势，<strong>请点击上方目标局势卡</strong>指定。`;
-          } else {
-            hintEl.innerHTML = `【${selectedCard.name}】将作为通用国政施行。预期影响：${selectedCard.personality}`;
-          }
-        }
-      } else if (isPostPlay) {
-        hintEl.innerHTML = '政令已布。<strong>可点击剩余奏折上方的【留】按钮留存一策</strong>，或直接「退朝」。';
-      } else if (this.game.phase === 'ANNUAL_POLICY') {
-        hintEl.innerHTML = '岁末廷议，请从朝议定策中确立来年国策。';
-      } else if (this.game.phase === 'ENDED') {
-        hintEl.innerHTML = '天命所止，大朝已毕。';
-      }
-    }
 
     if (playBtn) {
-      if (this.game.phase === 'PLAY_CARD' && selectedCard) {
+      if (selectedId && !this.game.world.isSuccessionPending) {
         playBtn.disabled = false;
         playBtn.classList.remove('disabled');
+        playBtn.textContent = '朱批照准';
       } else {
         playBtn.disabled = true;
         playBtn.classList.add('disabled');
+        playBtn.textContent = '请批阅奏折';
       }
     }
 
     if (adjournBtn) {
-      if (isPostPlay && !this.game.isGameOver) {
+      if (!this.game.world.isSuccessionPending) {
         adjournBtn.disabled = false;
         adjournBtn.classList.remove('disabled');
+        adjournBtn.textContent = '退朝 · 无为';
       } else {
         adjournBtn.disabled = true;
         adjournBtn.classList.add('disabled');
@@ -338,37 +225,23 @@ export class UIRenderer {
     }
   }
 
-  // 渲染史册
-  renderHistorySidebar() {
-    const listEl = document.getElementById('chronicle-list');
-    if (!listEl) return;
-    listEl.innerHTML = '';
-
-    const entries = this.game.historyManager.getAllEntries();
-    [...entries].reverse().forEach(entry => {
-      const item = document.createElement('div');
-      item.className = `chronicle-item item-${entry.type}`;
-      item.innerHTML = `
-        <div class="chronicle-time">${entry.timeText}</div>
-        <div class="chronicle-title">${entry.title}</div>
-        <div class="chronicle-text">${entry.text}</div>
-      `;
-      listEl.appendChild(item);
-    });
+  // 5. 季节氛围微妙光晕变化 (Section 83)
+  renderSeasonAmbience() {
+    const season = this.game.world.historyManager.getSeason(this.game.world.turn);
+    const theme = BALANCE.SEASON_THEMES[season];
+    const deskEl = document.getElementById('game-container');
+    if (deskEl && theme) {
+      deskEl.style.backgroundColor = '';
+      deskEl.style.boxShadow = `inset 0 0 100px ${theme.tint}`;
+    }
   }
 
-  getSelectedCard() {
-    if (!this.game.selectedCardId) return null;
-    return this.game.deckManager.hand.find(c => c.id === this.game.selectedCardId);
-  }
-
-  // 出牌反馈 (玉玺盖印 + 明确的阶段演变与后遗状态生成提示)
-  playCardFeedback(result) {
+  // 朱批盖印反馈动画 (Section 53)
+  playEnactFeedback(feedbackText) {
     const overlay = document.getElementById('seal-animation-overlay');
     const sealImg = document.getElementById('imperial-seal-stamp');
     const feedbackBox = document.getElementById('action-feedback-banner');
-    const feedbackText = document.getElementById('feedback-flavor-text');
-    const feedbackDeltas = document.getElementById('feedback-stat-deltas');
+    const feedbackFlavor = document.getElementById('feedback-flavor-text');
 
     if (overlay && sealImg) {
       overlay.classList.remove('hidden');
@@ -376,49 +249,15 @@ export class UIRenderer {
       setTimeout(() => {
         sealImg.classList.remove('stamp-down');
         overlay.classList.add('hidden');
-      }, 650);
+      }, 750);
     }
 
-    if (feedbackBox && feedbackText) {
-      let stageChangeText = '';
-      if (result.targetSituation && result.sitResolution) {
-        stageChangeText = `<div class="feedback-stage-change">【${result.targetSituation.name}】：${result.sitResolution.text}</div>`;
-      }
-
-      let residueText = '';
-      if (result.residueCreated && result.residueCreated.residue) {
-        residueText = `<div class="feedback-residue-gain">✦ 种下因果：获得【${result.residueCreated.residue.name}】</div>`;
-      }
-
-      feedbackText.innerHTML = `
-        <div class="feedback-headline">${result.headline}</div>
-        <div class="feedback-quote">“${result.historyText}”</div>
-        ${stageChangeText}
-        ${residueText}
-      `;
-
-      if (feedbackDeltas) {
-        feedbackDeltas.innerHTML = '';
-        const d = result.statDelta;
-        const labels = [
-          { key: 'treasury', name: '国库' },
-          { key: 'morale', name: '民心' },
-          { key: 'military', name: '军势' },
-          { key: 'court', name: '朝局' }
-        ];
-        labels.forEach(item => {
-          const val = d[item.key];
-          if (val) {
-            const span = document.createElement('span');
-            span.className = `delta-tag ${val > 0 ? 'pos' : 'neg'}`;
-            span.textContent = `${item.name} ${val > 0 ? '↑' : '↓'} ${Math.abs(val)}`;
-            feedbackDeltas.appendChild(span);
-          }
-        });
-      }
-
+    if (feedbackBox && feedbackFlavor) {
+      feedbackFlavor.textContent = feedbackText || '朱批照准，诸司即刻奉行。';
       feedbackBox.classList.remove('hidden');
-      feedbackBox.classList.add('show-feedback');
+      setTimeout(() => {
+        feedbackBox.classList.add('hidden');
+      }, 2500);
     }
   }
 }

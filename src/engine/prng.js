@@ -40,6 +40,10 @@ export class RandomManager {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   }
 
+  next() {
+    return this.nextFloat();
+  }
+
   // 整数范围 [min, max] 包含两端
   nextInt(min, max) {
     return Math.floor(this.nextFloat() * (max - min + 1)) + min;

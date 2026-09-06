@@ -1,0 +1,2920 @@
+{
+  "version": "0.3",
+  "exportedAt": "2026-09-06T03:54:55.376Z",
+  "seed": "play_export_seed",
+  "metrics": {
+    "totalTurns": 21,
+    "totalEventsSimulated": 72,
+    "headlinesShownCount": 55,
+    "storyContinuityRate": "36.4%",
+    "characterRecurrenceRate": "34.5%",
+    "isolatedRandomEventRatio": "0.0%",
+    "avgCharacterReturnInterval": "4.3 季",
+    "playerActionCount": 10,
+    "nonActionCount": 11,
+    "causalHooksPlanted": 5,
+    "causalHooksTriggered": 0
+  },
+  "emperors": [],
+  "currentEmperor": {
+    "generation": 1,
+    "dynasty": "大雍",
+    "eraName": "永安",
+    "name": "承嗣",
+    "templeName": "太宗",
+    "age": 39,
+    "startAge": 34,
+    "yearsReigning": 5,
+    "healthLevel": 4,
+    "traits": [
+      "宽仁",
+      "尚武"
+    ],
+    "alive": true,
+    "deathTurn": null,
+    "deathReason": null,
+    "annalsHighlights": []
+  },
+  "royalFamily": {
+    "empress": {
+      "name": "王婉",
+      "title": "皇后",
+      "age": 35,
+      "alive": true,
+      "pregnant": false,
+      "pregnancyTurns": 0
+    },
+    "children": [
+      {
+        "id": "heir_initial",
+        "name": "承平",
+        "title": "皇长子",
+        "gender": "male",
+        "age": 9,
+        "alive": true,
+        "isHeir": true,
+        "tutor": "沈恪",
+        "traits": [
+          "devoted",
+          "benevolent"
+        ],
+        "health": "healthy",
+        "married": false,
+        "history": [
+          "开国定策，即位初年册立为皇太子，居承华殿。",
+          "永安二年 冬 年及六岁，正式入文华殿启蒙开讲。",
+          "永安三年 春 年及六岁，正式入文华殿启蒙开讲。",
+          "永安三年 夏 年及六岁，正式入文华殿启蒙开讲。",
+          "永安五年 秋 以【沈恪】为师，专心诵习治道。"
+        ]
+      },
+      {
+        "id": "child_1788666895374_1",
+        "name": "宏业",
+        "title": "皇2子",
+        "gender": "male",
+        "age": 4,
+        "alive": true,
+        "isHeir": false,
+        "tutor": null,
+        "traits": [
+          "devoted",
+          "benevolent"
+        ],
+        "health": "healthy",
+        "personalityIdea": "仁孝宽厚",
+        "history": [
+          "永安二年 秋 降生于禁中坤宁宫。"
+        ]
+      },
+      {
+        "id": "daughter_1788666895375_2",
+        "name": "长乐",
+        "title": "长乐公主",
+        "gender": "female",
+        "age": 2,
+        "alive": true,
+        "isHeir": false,
+        "health": "healthy",
+        "history": [
+          "永安四年 夏 降生于禁中坤宁宫。"
+        ]
+      },
+      {
+        "id": "daughter_1788666895375_3",
+        "name": "长乐",
+        "title": "长乐公主",
+        "gender": "female",
+        "age": 1,
+        "alive": true,
+        "isHeir": false,
+        "health": "healthy",
+        "history": [
+          "永安五年 夏 降生于禁中坤宁宫。"
+        ]
+      }
+    ],
+    "heirId": "heir_initial"
+  },
+  "characters": [
+    {
+      "name": "韩策",
+      "office": "镇北大将军",
+      "age": 47,
+      "alive": true,
+      "traits": [
+        "martial",
+        "ambitious"
+      ],
+      "influence": 117,
+      "history": [
+        "登仕之初，任【镇北大将军】。",
+        "永安元年 秋 奉准增募北军精锐三万，军威益盛。",
+        "永安二年 春 巡阅八达岭边卡，督训塞防骁骑。",
+        "永安二年 夏 出奇兵大破虏营，威震大漠。",
+        "永安二年 秋 巡阅八达岭边卡，督训塞防骁骑。",
+        "永安三年 夏 巡阅八达岭边卡，督训塞防骁骑。",
+        "永安四年 秋 奉准增募北军精锐三万，军威益盛。",
+        "永安五年 秋 巡阅八达岭边卡，督训塞防骁骑。",
+        "永安五年 冬 巡阅八达岭边卡，督训塞防骁骑。"
+      ]
+    },
+    {
+      "name": "沈恪",
+      "office": "河东巡抚兼按察使",
+      "age": 43,
+      "alive": true,
+      "traits": [
+        "reforming",
+        "upright"
+      ],
+      "influence": 81,
+      "history": [
+        "登仕之初，任【河东巡抚兼按察使】。",
+        "永安元年 秋 严劾州县赋役弊端，申明均平法度。",
+        "永安二年 夏 严劾州县赋役弊端，申明均平法度。",
+        "永安三年 春 严劾州县赋役弊端，申明均平法度。",
+        "永安三年 夏 严劾州县赋役弊端，申明均平法度。",
+        "永安三年 冬 严劾州县赋役弊端，申明均平法度。",
+        "永安四年 春 严劾州县赋役弊端，申明均平法度。",
+        "永安五年 秋 严劾州县赋役弊端，申明均平法度。"
+      ]
+    },
+    {
+      "name": "魏肃",
+      "office": "中书令 · 首辅",
+      "age": 60,
+      "alive": false,
+      "traits": [
+        "conservative",
+        "devoted"
+      ],
+      "influence": 99,
+      "history": [
+        "登仕之初，任【中书令 · 首辅】。",
+        "永安元年 夏 调停台阁争议，平理庶狱。",
+        "永安二年 春 调停台阁争议，平理庶狱。",
+        "永安三年 夏 调停台阁争议，平理庶狱。",
+        "永安三年 秋 调停台阁争议，平理庶狱。",
+        "永安三年 冬 调停台阁争议，平理庶狱。",
+        "永安四年 秋 调停台阁争议，平理庶狱。",
+        "永安五年 夏 积劳成疾，病逝于邸舍，享年60。"
+      ]
+    },
+    {
+      "name": "裴简",
+      "office": "左副都御史",
+      "age": 39,
+      "alive": true,
+      "traits": [
+        "incorruptible",
+        "upright"
+      ],
+      "influence": 56,
+      "history": [
+        "登仕之初，任【左副都御史】。",
+        "永安二年 夏 上疏纠劾百官怠职，言辞凛然。",
+        "永安二年 冬 上疏纠劾百官怠职，言辞凛然。",
+        "永安三年 春 疏劾权门不法，名动公卿。",
+        "永安三年 秋 上疏纠劾百官怠职，言辞凛然。",
+        "永安三年 冬 上疏纠劾百官怠职，言辞凛然。",
+        "永安四年 夏 上疏纠劾百官怠职，言辞凛然。",
+        "永安五年 春 上疏纠劾百官怠职，言辞凛然。",
+        "永安五年 秋 上疏纠劾百官怠职，言辞凛然。",
+        "永安五年 秋 疏劾权门不法，名动公卿。",
+        "永安六年 春 上疏纠劾百官怠职，言辞凛然。"
+      ]
+    },
+    {
+      "name": "顾源",
+      "office": "两浙市舶司总管 · 巨贾",
+      "age": 51,
+      "alive": true,
+      "traits": [
+        "mercantile",
+        "tactful"
+      ],
+      "influence": 116,
+      "history": [
+        "登仕之初，任【两浙市舶司总管 · 巨贾】。",
+        "永安元年 秋 泛海联通南洋商路，捐纳助修海塘。",
+        "永安元年 冬 泛海联通南洋商路，捐纳助修海塘。",
+        "永安二年 春 奉旨在两浙督办市舶，海利大通。",
+        "永安二年 秋 泛海联通南洋商路，捐纳助修海塘。",
+        "永安二年 冬 泛海联通南洋商路，捐纳助修海塘。",
+        "永安三年 夏 泛海联通南洋商路，捐纳助修海塘。",
+        "永安三年 秋 泛海联通南洋商路，捐纳助修海塘。",
+        "永安五年 秋 泛海联通南洋商路，捐纳助修海塘。",
+        "永安六年 春 泛海联通南洋商路，捐纳助修海塘。"
+      ]
+    },
+    {
+      "name": "汪成",
+      "office": "司礼监掌印太监",
+      "age": 53,
+      "alive": true,
+      "traits": [
+        "tactful",
+        "extravagant"
+      ],
+      "influence": 68,
+      "history": [
+        "登仕之初，任【司礼监掌印太监】。"
+      ]
+    },
+    {
+      "name": "石雄",
+      "office": "折冲校尉 · 宿卫统领",
+      "age": 30,
+      "alive": true,
+      "traits": [
+        "martial",
+        "devoted"
+      ],
+      "influence": 35,
+      "history": [
+        "登仕之初，任【折冲校尉 · 宿卫统领】。",
+        "永安五年 夏 登朝拜官，初任【折冲校尉 · 宿卫统领】。"
+      ]
+    }
+  ],
+  "factions": {
+    "civil": {
+      "influence": 65,
+      "id": "civil",
+      "name": "文官"
+    },
+    "military": {
+      "influence": 70,
+      "id": "military",
+      "name": "武将"
+    },
+    "gentry": {
+      "influence": 50,
+      "id": "gentry",
+      "name": "豪族"
+    },
+    "merchants": {
+      "influence": 61,
+      "id": "merchants",
+      "name": "商人"
+    },
+    "palace": {
+      "influence": 30,
+      "id": "palace",
+      "name": "内廷"
+    }
+  },
+  "regions": {
+    "north": {
+      "prosperity": 45,
+      "order": 85,
+      "pressure": 5,
+      "id": "north",
+      "name": "北境"
+    },
+    "south": {
+      "prosperity": 100,
+      "order": 60,
+      "pressure": 25,
+      "id": "south",
+      "name": "江南",
+      "hasHarvestedThisYear": false
+    },
+    "central": {
+      "prosperity": 60,
+      "order": 70,
+      "pressure": 30,
+      "id": "central",
+      "name": "中原"
+    },
+    "west": {
+      "prosperity": 50,
+      "order": 55,
+      "pressure": 30,
+      "id": "west",
+      "name": "西陲"
+    }
+  },
+  "threads": [
+    {
+      "threadId": "th_north_steppe_crisis_1788666895372",
+      "templateId": "north_steppe_crisis",
+      "name": "北境易主与争雄",
+      "category": "realm",
+      "region": "north",
+      "stage": 6,
+      "momentum": 50,
+      "status": "resolved",
+      "participants": [
+        "han_ce"
+      ],
+      "lastEventTurn": 7,
+      "history": [
+        {
+          "turn": 1,
+          "stage": 1,
+          "desc": "老王暴卒 · 诸子争位"
+        }
+      ]
+    },
+    {
+      "threadId": "th_local_reform_shen_1788666895372",
+      "templateId": "local_reform_shen",
+      "name": "沈恪均田清赋",
+      "category": "court",
+      "region": "central",
+      "stage": 4,
+      "momentum": 50,
+      "status": "resolved",
+      "participants": [
+        "shen_ke",
+        "pei_jian"
+      ],
+      "lastEventTurn": 7,
+      "history": [
+        {
+          "turn": 1,
+          "stage": 1,
+          "desc": "清丈田亩 · 豪强惊疑"
+        }
+      ]
+    },
+    {
+      "threadId": "th_emperor_personal_pursuit_1788666895373",
+      "templateId": "emperor_personal_pursuit",
+      "name": "西苑长生与广厦之思",
+      "category": "palace",
+      "region": "central",
+      "stage": 3,
+      "momentum": 50,
+      "status": "resolved",
+      "participants": [],
+      "lastEventTurn": 4,
+      "history": [
+        {
+          "turn": 1,
+          "stage": 1,
+          "desc": "山人进药 · 灵符初呈"
+        }
+      ]
+    },
+    {
+      "threadId": "th_sea_trade_merchant_rise_1788666895374",
+      "templateId": "sea_trade_merchant_rise",
+      "name": "海舶通商与顾氏金山",
+      "category": "realm",
+      "region": "south",
+      "stage": 5,
+      "momentum": 50,
+      "status": "resolved",
+      "participants": [],
+      "lastEventTurn": 11,
+      "history": [
+        {
+          "turn": 1,
+          "stage": 1,
+          "desc": "开海通商 · 舶客交驰"
+        }
+      ]
+    },
+    {
+      "threadId": "th_frontier_general_rise_1788666895374",
+      "templateId": "frontier_general_rise",
+      "name": "边将韩策崛起",
+      "category": "court",
+      "region": "north",
+      "stage": 6,
+      "momentum": 50,
+      "status": "resolved",
+      "participants": [],
+      "lastEventTurn": 14,
+      "history": [
+        {
+          "turn": 1,
+          "stage": 1,
+          "desc": "立功受赏 · 边镇推尊"
+        }
+      ]
+    },
+    {
+      "threadId": "th_heir_growth_destiny_1788666895375",
+      "templateId": "heir_growth_destiny",
+      "name": "东宫储嗣经略",
+      "category": "palace",
+      "region": "central",
+      "stage": 4,
+      "momentum": 50,
+      "status": "active",
+      "participants": [],
+      "lastEventTurn": 21,
+      "history": [
+        {
+          "turn": 1,
+          "stage": 1,
+          "desc": "入阁启蒙 · 择求元良"
+        }
+      ]
+    },
+    {
+      "threadId": "th_sea_trade_merchant_rise_1788666895375",
+      "templateId": "sea_trade_merchant_rise",
+      "name": "海舶通商与顾氏金山",
+      "category": "realm",
+      "region": "south",
+      "stage": 4,
+      "momentum": 50,
+      "status": "active",
+      "participants": [],
+      "lastEventTurn": 20,
+      "history": [
+        {
+          "turn": 1,
+          "stage": 1,
+          "desc": "开海通商 · 舶客交驰"
+        }
+      ]
+    }
+  ],
+  "causalHooks": [
+    {
+      "id": "palace_construction_started",
+      "name": "大兴土木",
+      "turn": 1,
+      "sourceAction": "【请拓西苑神仙殿宇】",
+      "affectedCharacters": [
+        "wang_cheng"
+      ],
+      "affectedThreads": [],
+      "triggeredEventsCount": 0,
+      "createdAtTurn": 1
+    },
+    {
+      "id": "han_ce_reinforced",
+      "name": "北军扩充",
+      "turn": 3,
+      "sourceAction": "【请增北军三万】",
+      "affectedCharacters": [
+        "han_ce"
+      ],
+      "affectedThreads": [],
+      "triggeredEventsCount": 0,
+      "createdAtTurn": 3
+    },
+    {
+      "id": "open_sea_trade",
+      "name": "海禁大开",
+      "turn": 5,
+      "sourceAction": "【请弛海禁通达外洋】",
+      "affectedCharacters": [
+        "gu_yuan"
+      ],
+      "affectedThreads": [],
+      "triggeredEventsCount": 0,
+      "createdAtTurn": 5
+    },
+    {
+      "id": "austere_policy",
+      "name": "勤俭省役",
+      "turn": 7,
+      "sourceAction": "【陈请停罢杂役慎守持重】",
+      "affectedCharacters": [
+        "wei_su"
+      ],
+      "affectedThreads": [],
+      "triggeredEventsCount": 0,
+      "createdAtTurn": 7
+    },
+    {
+      "id": "strict_anticorruption",
+      "name": "铁腕惩贪",
+      "turn": 9,
+      "sourceAction": "【参劾内臣外官通赂】",
+      "affectedCharacters": [
+        "pei_jian"
+      ],
+      "affectedThreads": [],
+      "triggeredEventsCount": 0,
+      "createdAtTurn": 9
+    }
+  ],
+  "memories": [
+    {
+      "id": "mem_1788666895373_3374",
+      "type": "character",
+      "targetId": "wang_cheng",
+      "description": "帝准其【【请拓西苑神仙殿宇】】之请，深感简在帝心",
+      "importance": 7,
+      "turn": 1,
+      "sourceEventId": null,
+      "relatedIds": [],
+      "createdAt": 1788666895373
+    },
+    {
+      "id": "mem_1788666895373_6127",
+      "type": "character",
+      "targetId": "han_ce",
+      "description": "帝准其【【请增北军三万】】之请，深感简在帝心",
+      "importance": 7,
+      "turn": 3,
+      "sourceEventId": null,
+      "relatedIds": [],
+      "createdAt": 1788666895373
+    },
+    {
+      "id": "mem_1788666895374_6399",
+      "type": "character",
+      "targetId": "gu_yuan",
+      "description": "帝准其【【请弛海禁通达外洋】】之请，深感简在帝心",
+      "importance": 7,
+      "turn": 5,
+      "sourceEventId": null,
+      "relatedIds": [],
+      "createdAt": 1788666895374
+    },
+    {
+      "id": "mem_1788666895374_67",
+      "type": "character",
+      "targetId": "wei_su",
+      "description": "帝准其【【陈请停罢杂役慎守持重】】之请，深感简在帝心",
+      "importance": 7,
+      "turn": 7,
+      "sourceEventId": null,
+      "relatedIds": [],
+      "createdAt": 1788666895374
+    },
+    {
+      "id": "mem_1788666895374_480",
+      "type": "character",
+      "targetId": "pei_jian",
+      "description": "帝准其【【参劾内臣外官通赂】】之请，深感简在帝心",
+      "importance": 7,
+      "turn": 9,
+      "sourceEventId": null,
+      "relatedIds": [],
+      "createdAt": 1788666895374
+    },
+    {
+      "id": "mem_1788666895374_3650",
+      "type": "character",
+      "targetId": "wei_su",
+      "description": "帝准其【【陈请停罢杂役慎守持重】】之请，深感简在帝心",
+      "importance": 7,
+      "turn": 11,
+      "sourceEventId": null,
+      "relatedIds": [],
+      "createdAt": 1788666895374
+    },
+    {
+      "id": "mem_1788666895375_1160",
+      "type": "character",
+      "targetId": "wei_su",
+      "description": "帝准其【【陈请停罢杂役慎守持重】】之请，深感简在帝心",
+      "importance": 7,
+      "turn": 13,
+      "sourceEventId": null,
+      "relatedIds": [],
+      "createdAt": 1788666895375
+    },
+    {
+      "id": "mem_1788666895375_317",
+      "type": "character",
+      "targetId": "han_ce",
+      "description": "帝准其【【请增北军三万】】之请，深感简在帝心",
+      "importance": 7,
+      "turn": 15,
+      "sourceEventId": null,
+      "relatedIds": [],
+      "createdAt": 1788666895375
+    },
+    {
+      "id": "mem_1788666895375_931",
+      "type": "character",
+      "targetId": "wei_su",
+      "description": "帝准其【【陈请停罢杂役慎守持重】】之请，深感简在帝心",
+      "importance": 7,
+      "turn": 17,
+      "sourceEventId": null,
+      "relatedIds": [],
+      "createdAt": 1788666895375
+    },
+    {
+      "id": "mem_1788666895375_8348",
+      "type": "character",
+      "targetId": "pei_jian",
+      "description": "帝准其【【参劾内臣外官通赂】】之请，深感简在帝心",
+      "importance": 7,
+      "turn": 19,
+      "sourceEventId": null,
+      "relatedIds": [],
+      "createdAt": 1788666895376
+    }
+  ],
+  "chronicle": [
+    {
+      "turn": 1,
+      "year": 1,
+      "season": "春",
+      "timeText": "永安元年 春",
+      "type": "succession",
+      "title": "先帝新丧 · 嗣皇帝登极",
+      "text": "大雍先帝龙驭宾天，皇太子于太极殿即皇帝位，年二十九，受命于天，改元永安。"
+    },
+    {
+      "turn": 1,
+      "year": 1,
+      "season": "春",
+      "timeText": "永安元年 春",
+      "type": "action",
+      "title": "御批：【请拓西苑神仙殿宇】",
+      "text": "帝朱批【【请拓西苑神仙殿宇】】(司礼监 · 汪成密奏)。依奏。令司礼监督工赶造西苑瑶台，日夕香火祷祝。"
+    },
+    {
+      "turn": 2,
+      "year": 1,
+      "season": "夏",
+      "timeText": "永安元年 夏",
+      "type": "court",
+      "title": "【魏肃调停】",
+      "text": "中书令魏肃召六卿会食都堂，从容弥缝各部纷争，庶政规矩肃然。"
+    },
+    {
+      "turn": 2,
+      "year": 1,
+      "season": "夏",
+      "timeText": "永安元年 夏",
+      "type": "adjourn",
+      "title": "退朝无为 · 诸司奉例",
+      "text": "季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。"
+    },
+    {
+      "turn": 3,
+      "year": 1,
+      "season": "秋",
+      "timeText": "永安元年 秋",
+      "type": "realm",
+      "title": "乌桓内哄 · 狼烟夜起",
+      "text": "乌桓二王相争，败卒数十帐流入大同边关投降。"
+    },
+    {
+      "turn": 3,
+      "year": 1,
+      "season": "秋",
+      "timeText": "永安元年 秋",
+      "type": "court",
+      "title": "名族结怨 · 阻挠清丈",
+      "text": "清丈册籍在金陵被焚，沈恪拔剑怒斥士阀国蠹。"
+    },
+    {
+      "turn": 3,
+      "year": 1,
+      "season": "秋",
+      "timeText": "永安元年 秋",
+      "type": "palace",
+      "title": "谏官叩阙 · 泣血陈辞",
+      "text": "天子自省撤罢奢费之役，海内传诵明君之美。"
+    },
+    {
+      "turn": 3,
+      "year": 1,
+      "season": "秋",
+      "timeText": "永安元年 秋",
+      "type": "action",
+      "title": "御批：【请增北军三万】",
+      "text": "帝朱批【【请增北军三万】】(兵部 · 镇北大将军韩策奏)。准奏。诏拨内帑与户部饷银，大扩北军，边防顿固。"
+    },
+    {
+      "turn": 4,
+      "year": 1,
+      "season": "冬",
+      "timeText": "永安元年 冬",
+      "type": "realm",
+      "title": "胡骑纵掠 · 边城告急",
+      "text": "大漠胡骑犯界，焚掠边堡，羽书一日三至。"
+    },
+    {
+      "turn": 4,
+      "year": 1,
+      "season": "冬",
+      "timeText": "永安元年 冬",
+      "type": "palace",
+      "title": "黜退方士 · 归崇王道",
+      "text": "洗心更始，万邦属望，君德归正。"
+    },
+    {
+      "turn": 4,
+      "year": 1,
+      "season": "冬",
+      "timeText": "永安元年 冬",
+      "type": "palace",
+      "title": "【椒房有喜】",
+      "text": "太医奏报皇后有娠，后宫采办锦缎，群臣上笺称贺。"
+    },
+    {
+      "turn": 4,
+      "year": 1,
+      "season": "冬",
+      "timeText": "永安元年 冬",
+      "type": "adjourn",
+      "title": "退朝无为 · 诸司奉例",
+      "text": "季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。"
+    },
+    {
+      "turn": 5,
+      "year": 2,
+      "season": "春",
+      "timeText": "永安二年 春",
+      "type": "realm",
+      "title": "【韩策阅兵】",
+      "text": "大将军韩策亲勒精骑三万大阅于长城之下，军容整肃，塞北游骑望风慑服。"
+    },
+    {
+      "turn": 5,
+      "year": 2,
+      "season": "春",
+      "timeText": "永安二年 春",
+      "type": "court",
+      "title": "御笔乾断 · 圣眷独隆",
+      "text": "君臣相知，变法如燎原之火势不可挡。"
+    },
+    {
+      "turn": 5,
+      "year": 2,
+      "season": "春",
+      "timeText": "永安二年 春",
+      "type": "court",
+      "title": "【魏肃调停】",
+      "text": "中书令魏肃召六卿会食都堂，从容弥缝各部纷争，庶政规矩肃然。"
+    },
+    {
+      "turn": 5,
+      "year": 2,
+      "season": "春",
+      "timeText": "永安二年 春",
+      "type": "action",
+      "title": "御批：【请弛海禁通达外洋】",
+      "text": "帝朱批【【请弛海禁通达外洋】】(市舶司 · 巨贾顾源奏)。准奏。撤弛海禁，万艘巨舶泛洋，东南关课日入千金。"
+    },
+    {
+      "turn": 6,
+      "year": 2,
+      "season": "夏",
+      "timeText": "永安二年 夏",
+      "type": "realm",
+      "title": "大将军韩策勒石燕然",
+      "text": "韩策飞骑传捷，捷书所至百官称贺，军声大振。"
+    },
+    {
+      "turn": 6,
+      "year": 2,
+      "season": "夏",
+      "timeText": "永安二年 夏",
+      "type": "court",
+      "title": "商贾输粮 · 万斛充饷",
+      "text": "金穴之富冠绝南邦，朝廷度支顿得宽舒。"
+    },
+    {
+      "turn": 6,
+      "year": 2,
+      "season": "夏",
+      "timeText": "永安二年 夏",
+      "type": "court",
+      "title": "【沈恪严察】",
+      "text": "沈恪巡历郡县，亲查常平仓与粮赋簿册，严惩欺隐小吏三十人，官箴为之悚栗。"
+    },
+    {
+      "turn": 6,
+      "year": 2,
+      "season": "夏",
+      "timeText": "永安二年 夏",
+      "type": "adjourn",
+      "title": "退朝无为 · 诸司奉例",
+      "text": "季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。"
+    },
+    {
+      "turn": 7,
+      "year": 2,
+      "season": "秋",
+      "timeText": "永安二年 秋",
+      "type": "realm",
+      "title": "大漠肃清 · 四海受抚",
+      "text": "北方塞外平定，烽火久熄，民乐其业。"
+    },
+    {
+      "turn": 7,
+      "year": 2,
+      "season": "秋",
+      "timeText": "永安二年 秋",
+      "type": "court",
+      "title": "更化大定 · 府库红腐",
+      "text": "中兴治道成型，史家称一代良相。"
+    },
+    {
+      "turn": 7,
+      "year": 2,
+      "season": "秋",
+      "timeText": "永安二年 秋",
+      "type": "palace",
+      "title": "【诞育麟儿】",
+      "text": "皇后顺诞皇子【宏业】，满月设宴，定为宗嗣。"
+    },
+    {
+      "turn": 7,
+      "year": 2,
+      "season": "秋",
+      "timeText": "永安二年 秋",
+      "type": "action",
+      "title": "御批：【陈请停罢杂役慎守持重】",
+      "text": "帝朱批【【陈请停罢杂役慎守持重】】(内阁 · 首辅魏肃疏)。温旨照准。停罢各路额外进贡与工役，海内称天子恭俭。"
+    },
+    {
+      "turn": 8,
+      "year": 2,
+      "season": "冬",
+      "timeText": "永安二年 冬",
+      "type": "realm",
+      "title": "【顾源市舶】",
+      "text": "顾氏船队自爪哇载香药珍珠数十万斛归港，完纳商税四万两，市舶司称其输纳勤笃。"
+    },
+    {
+      "turn": 8,
+      "year": 2,
+      "season": "冬",
+      "timeText": "永安二年 冬",
+      "type": "court",
+      "title": "大将陈情 · 请增饷甲",
+      "text": "韩策奏疏言辞切切，六部百司就度支争执不下。"
+    },
+    {
+      "turn": 8,
+      "year": 2,
+      "season": "冬",
+      "timeText": "永安二年 冬",
+      "type": "palace",
+      "title": "【东宫开蒙】",
+      "text": "储君【承平】已届六龄，当择名臣辅导德器。"
+    },
+    {
+      "turn": 8,
+      "year": 2,
+      "season": "冬",
+      "timeText": "永安二年 冬",
+      "type": "adjourn",
+      "title": "退朝无为 · 诸司奉例",
+      "text": "季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。"
+    },
+    {
+      "turn": 9,
+      "year": 3,
+      "season": "春",
+      "timeText": "永安三年 春",
+      "type": "court",
+      "title": "江表磐石 · 赋税自专",
+      "text": "江表经济盘根错节，天下财税半出于此。"
+    },
+    {
+      "turn": 9,
+      "year": 3,
+      "season": "春",
+      "timeText": "永安三年 春",
+      "type": "palace",
+      "title": "【东宫开蒙】",
+      "text": "储君【承平】已届六龄，当择名臣辅导德器。"
+    },
+    {
+      "turn": 9,
+      "year": 3,
+      "season": "春",
+      "timeText": "永安三年 春",
+      "type": "court",
+      "title": "【沈恪严察】",
+      "text": "沈恪巡历郡县，亲查常平仓与粮赋簿册，严惩欺隐小吏三十人，官箴为之悚栗。"
+    },
+    {
+      "turn": 9,
+      "year": 3,
+      "season": "春",
+      "timeText": "永安三年 春",
+      "type": "action",
+      "title": "御批：【参劾内臣外官通赂】",
+      "text": "帝朱批【【参劾内臣外官通赂】】(都察院 · 裴简直陈)。准奏。诏捕贪渎官弁下诏狱，朝野风肃，士气大励。"
+    },
+    {
+      "turn": 10,
+      "year": 3,
+      "season": "夏",
+      "timeText": "永安三年 夏",
+      "type": "realm",
+      "title": "【韩策阅兵】",
+      "text": "大将军韩策亲勒精骑三万大阅于长城之下，军容整肃，塞北游骑望风慑服。"
+    },
+    {
+      "turn": 10,
+      "year": 3,
+      "season": "夏",
+      "timeText": "永安三年 夏",
+      "type": "court",
+      "title": "言官劾将 · 尾大不掉",
+      "text": "裴简引祖制侃侃而谈，边庭闻之，将弁多有愤言。"
+    },
+    {
+      "turn": 10,
+      "year": 3,
+      "season": "夏",
+      "timeText": "永安三年 夏",
+      "type": "palace",
+      "title": "【东宫开蒙】",
+      "text": "储君【承平】已届六龄，当择名臣辅导德器。"
+    },
+    {
+      "turn": 10,
+      "year": 3,
+      "season": "夏",
+      "timeText": "永安三年 夏",
+      "type": "adjourn",
+      "title": "退朝无为 · 诸司奉例",
+      "text": "季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。"
+    },
+    {
+      "turn": 11,
+      "year": 3,
+      "season": "秋",
+      "timeText": "永安三年 秋",
+      "type": "realm",
+      "title": "【顾源市舶】",
+      "text": "顾氏船队自爪哇载香药珍珠数十万斛归港，完纳商税四万两，市舶司称其输纳勤笃。"
+    },
+    {
+      "turn": 11,
+      "year": 3,
+      "season": "秋",
+      "timeText": "永安三年 秋",
+      "type": "court",
+      "title": "万舶云屯 · 海国大治",
+      "text": "开海之功垂诸后世，海防富庶兼济。"
+    },
+    {
+      "turn": 11,
+      "year": 3,
+      "season": "秋",
+      "timeText": "永安三年 秋",
+      "type": "palace",
+      "title": "【椒房有喜】",
+      "text": "太医奏报皇后有娠，后宫采办锦缎，群臣上笺称贺。"
+    },
+    {
+      "turn": 11,
+      "year": 3,
+      "season": "秋",
+      "timeText": "永安三年 秋",
+      "type": "action",
+      "title": "御批：【陈请停罢杂役慎守持重】",
+      "text": "帝朱批【【陈请停罢杂役慎守持重】】(内阁 · 首辅魏肃疏)。温旨照准。停罢各路额外进贡与工役，海内称天子恭俭。"
+    },
+    {
+      "turn": 12,
+      "year": 3,
+      "season": "冬",
+      "timeText": "永安三年 冬",
+      "type": "court",
+      "title": "边军鼓噪 · 挽留元帅",
+      "text": "石雄手刃鼓噪者三人，严令归营，朝野虚惊一场。"
+    },
+    {
+      "turn": 12,
+      "year": 3,
+      "season": "冬",
+      "timeText": "永安三年 冬",
+      "type": "court",
+      "title": "【沈恪严察】",
+      "text": "沈恪巡历郡县，亲查常平仓与粮赋簿册，严惩欺隐小吏三十人，官箴为之悚栗。"
+    },
+    {
+      "turn": 12,
+      "year": 3,
+      "season": "冬",
+      "timeText": "永安三年 冬",
+      "type": "court",
+      "title": "【裴简谏诤】",
+      "text": "副都御史裴简伏阙上书，申论百官考成与风俗教化，直声震于阙下。"
+    },
+    {
+      "turn": 12,
+      "year": 3,
+      "season": "冬",
+      "timeText": "永安三年 冬",
+      "type": "adjourn",
+      "title": "退朝无为 · 诸司奉例",
+      "text": "季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。"
+    },
+    {
+      "turn": 13,
+      "year": 4,
+      "season": "春",
+      "timeText": "永安四年 春",
+      "type": "court",
+      "title": "【沈恪严察】",
+      "text": "沈恪巡历郡县，亲查常平仓与粮赋簿册，严惩欺隐小吏三十人，官箴为之悚栗。"
+    },
+    {
+      "turn": 13,
+      "year": 4,
+      "season": "春",
+      "timeText": "永安四年 春",
+      "type": "action",
+      "title": "御批：【陈请停罢杂役慎守持重】",
+      "text": "帝朱批【【陈请停罢杂役慎守持重】】(内阁 · 首辅魏肃疏)。温旨照准。停罢各路额外进贡与工役，海内称天子恭俭。"
+    },
+    {
+      "turn": 14,
+      "year": 4,
+      "season": "夏",
+      "timeText": "永安四年 夏",
+      "type": "court",
+      "title": "将门结党 · 各怀异心",
+      "text": "边镇渐成自立之风，中枢屡敕戒勉。"
+    },
+    {
+      "turn": 14,
+      "year": 4,
+      "season": "夏",
+      "timeText": "永安四年 夏",
+      "type": "palace",
+      "title": "【明珠入掌】",
+      "text": "皇后诞下皇女，宫闱一片祥和欢欣。"
+    },
+    {
+      "turn": 14,
+      "year": 4,
+      "season": "夏",
+      "timeText": "永安四年 夏",
+      "type": "court",
+      "title": "【裴简谏诤】",
+      "text": "副都御史裴简伏阙上书，申论百官考成与风俗教化，直声震于阙下。"
+    },
+    {
+      "turn": 14,
+      "year": 4,
+      "season": "夏",
+      "timeText": "永安四年 夏",
+      "type": "adjourn",
+      "title": "退朝无为 · 诸司奉例",
+      "text": "季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。"
+    },
+    {
+      "turn": 15,
+      "year": 4,
+      "season": "秋",
+      "timeText": "永安四年 秋",
+      "type": "court",
+      "title": "【魏肃调停】",
+      "text": "中书令魏肃召六卿会食都堂，从容弥缝各部纷争，庶政规矩肃然。"
+    },
+    {
+      "turn": 15,
+      "year": 4,
+      "season": "秋",
+      "timeText": "永安四年 秋",
+      "type": "palace",
+      "title": "【椒房有喜】",
+      "text": "太医奏报皇后有娠，后宫采办锦缎，群臣上笺称贺。"
+    },
+    {
+      "turn": 15,
+      "year": 4,
+      "season": "秋",
+      "timeText": "永安四年 秋",
+      "type": "action",
+      "title": "御批：【请增北军三万】",
+      "text": "帝朱批【【请增北军三万】】(兵部 · 镇北大将军韩策奏)。准奏。诏拨内帑与户部饷银，大扩北军，边防顿固。"
+    },
+    {
+      "turn": 16,
+      "year": 4,
+      "season": "冬",
+      "timeText": "永安四年 冬",
+      "type": "realm",
+      "title": "【天下粗安】",
+      "text": "四海无惊，州郡按期输纳赋粮，关塞烽火久息。"
+    },
+    {
+      "turn": 16,
+      "year": 4,
+      "season": "冬",
+      "timeText": "永安四年 冬",
+      "type": "court",
+      "title": "【百僚恪勤】",
+      "text": "六曹文案循例而行，百官奉敕各供其职，都堂无大事。"
+    },
+    {
+      "turn": 16,
+      "year": 4,
+      "season": "冬",
+      "timeText": "永安四年 冬",
+      "type": "palace",
+      "title": "【宫闱穆穆】",
+      "text": "内廷诸司各守本分，圣躬起居如常，六宫肃静。"
+    },
+    {
+      "turn": 16,
+      "year": 4,
+      "season": "冬",
+      "timeText": "永安四年 冬",
+      "type": "adjourn",
+      "title": "退朝无为 · 诸司奉例",
+      "text": "季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。"
+    },
+    {
+      "turn": 17,
+      "year": 5,
+      "season": "春",
+      "timeText": "永安五年 春",
+      "type": "court",
+      "title": "【裴简谏诤】",
+      "text": "副都御史裴简伏阙上书，申论百官考成与风俗教化，直声震于阙下。"
+    },
+    {
+      "turn": 17,
+      "year": 5,
+      "season": "春",
+      "timeText": "永安五年 春",
+      "type": "action",
+      "title": "御批：【陈请停罢杂役慎守持重】",
+      "text": "帝朱批【【陈请停罢杂役慎守持重】】(内阁 · 首辅魏肃疏)。温旨照准。停罢各路额外进贡与工役，海内称天子恭俭。"
+    },
+    {
+      "turn": 18,
+      "year": 5,
+      "season": "夏",
+      "timeText": "永安五年 夏",
+      "type": "court",
+      "title": "【魏肃病逝】",
+      "text": "前中书令 · 首辅【魏肃】病终于任，享年60。自践仕途历辅朝政数十年，朝野闻讯无不震悼。"
+    },
+    {
+      "turn": 18,
+      "year": 5,
+      "season": "夏",
+      "timeText": "永安五年 夏",
+      "type": "palace",
+      "title": "【明珠入掌】",
+      "text": "皇后诞下皇女，宫闱一片祥和欢欣。"
+    },
+    {
+      "turn": 18,
+      "year": 5,
+      "season": "夏",
+      "timeText": "永安五年 夏",
+      "type": "court",
+      "title": "选置少傅 · 储宫定序",
+      "text": "少傅日侍讲读，东宫规行矩步，海内属望。"
+    },
+    {
+      "turn": 18,
+      "year": 5,
+      "season": "夏",
+      "timeText": "永安五年 夏",
+      "type": "adjourn",
+      "title": "退朝无为 · 诸司奉例",
+      "text": "季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。"
+    },
+    {
+      "turn": 19,
+      "year": 5,
+      "season": "秋",
+      "timeText": "永安五年 秋",
+      "type": "realm",
+      "title": "【韩策阅兵】",
+      "text": "大将军韩策亲勒精骑三万大阅于长城之下，军容整肃，塞北游骑望风慑服。"
+    },
+    {
+      "turn": 19,
+      "year": 5,
+      "season": "秋",
+      "timeText": "永安五年 秋",
+      "type": "court",
+      "title": "皇储进陈 · 独展机杼",
+      "text": "天子展阅称善，传示内阁百官，朝野翕然归心。"
+    },
+    {
+      "turn": 19,
+      "year": 5,
+      "season": "秋",
+      "timeText": "永安五年 秋",
+      "type": "palace",
+      "title": "【帝师授业】",
+      "text": "储君拜【沈恪】为少傅师席，师生情契日厚。"
+    },
+    {
+      "turn": 19,
+      "year": 5,
+      "season": "秋",
+      "timeText": "永安五年 秋",
+      "type": "action",
+      "title": "御批：【参劾内臣外官通赂】",
+      "text": "帝朱批【【参劾内臣外官通赂】】(都察院 · 裴简直陈)。准奏。诏捕贪渎官弁下诏狱，朝野风肃，士气大励。"
+    },
+    {
+      "turn": 20,
+      "year": 5,
+      "season": "冬",
+      "timeText": "永安五年 冬",
+      "type": "realm",
+      "title": "【韩策阅兵】",
+      "text": "大将军韩策亲勒精骑三万大阅于长城之下，军容整肃，塞北游骑望风慑服。"
+    },
+    {
+      "turn": 20,
+      "year": 5,
+      "season": "冬",
+      "timeText": "永安五年 冬",
+      "type": "court",
+      "title": "阀阅朱陈 · 士商一体",
+      "text": "冠盖云集六朝金粉，士大夫与金穴自此同体。"
+    },
+    {
+      "turn": 20,
+      "year": 5,
+      "season": "冬",
+      "timeText": "永安五年 冬",
+      "type": "adjourn",
+      "title": "退朝无为 · 诸司奉例",
+      "text": "季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。"
+    },
+    {
+      "turn": 21,
+      "year": 6,
+      "season": "春",
+      "timeText": "永安六年 春",
+      "type": "realm",
+      "title": "【顾源市舶】",
+      "text": "顾氏船队自爪哇载香药珍珠数十万斛归港，完纳商税四万两，市舶司称其输纳勤笃。"
+    },
+    {
+      "turn": 21,
+      "year": 6,
+      "season": "春",
+      "timeText": "永安六年 春",
+      "type": "court",
+      "title": "孝慈仁闻 · 储嗣磐石",
+      "text": "宗庙磐石安稳，后顾无虞。"
+    },
+    {
+      "turn": 21,
+      "year": 6,
+      "season": "春",
+      "timeText": "永安六年 春",
+      "type": "court",
+      "title": "【裴简谏诤】",
+      "text": "副都御史裴简伏阙上书，申论百官考成与风俗教化，直声震于阙下。"
+    }
+  ],
+  "turnsLog": [
+    {
+      "turn": 1,
+      "headlines": [
+        {
+          "category": "realm",
+          "priority": 80,
+          "title": "【万方称庆】",
+          "text": "大雍改元【永安】，塞北塞南关津罢兵，海隅父老望阙瞻拜。",
+          "finalScore": 80
+        },
+        {
+          "category": "court",
+          "priority": 75,
+          "title": "【首辅奉表】",
+          "text": "中书令魏肃率百僚入贺，恭进《圣德颂》，四海升平，朝纲初肃。",
+          "finalScore": 75
+        },
+        {
+          "category": "palace",
+          "priority": 70,
+          "title": "【中宫定分】",
+          "text": "册立王氏为正宫皇后，正位坤宁，六宫整肃，天家和睦。",
+          "finalScore": 95
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 3
+    },
+    {
+      "turn": 2,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 68,
+          "character": {
+            "id": "wei_su",
+            "name": "魏肃",
+            "gender": "male",
+            "age": 60,
+            "alive": false,
+            "role": "chancellor",
+            "office": "中书令 · 首辅",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "conservative",
+              "devoted"
+            ],
+            "ambition": 45,
+            "competence": 80,
+            "influence": 99,
+            "relationshipToEmperor": "trusted",
+            "relationships": {
+              "han_ce": "rival"
+            },
+            "currentGoal": "平息朝议纷争，保国祚无虞",
+            "initialQuote": "“祖宗家法已具，朝廷唯在持重安民，慎勿轻动。”",
+            "stateQuote": "“国之大事在祀与戎，宁迟重，莫轻躁。”",
+            "history": [
+              "登仕之初，任【中书令 · 首辅】。",
+              "永安元年 夏 调停台阁争议，平理庶狱。",
+              "永安二年 春 调停台阁争议，平理庶狱。",
+              "永安三年 夏 调停台阁争议，平理庶狱。",
+              "永安三年 秋 调停台阁争议，平理庶狱。",
+              "永安三年 冬 调停台阁争议，平理庶狱。",
+              "永安四年 秋 调停台阁争议，平理庶狱。",
+              "永安五年 夏 积劳成疾，病逝于邸舍，享年60。"
+            ],
+            "memories": [
+              {
+                "turn": 7,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 11,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 13,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 17,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【魏肃调停】",
+          "text": "中书令魏肃召六卿会食都堂，从容弥缝各部纷争，庶政规矩肃然。",
+          "chronicleText": "首辅魏肃持重调和百僚，政令平顺。",
+          "finalScore": 68
+        }
+      ],
+      "playerAction": "【请拓西苑神仙殿宇】",
+      "allEventsCount": 1
+    },
+    {
+      "turn": 3,
+      "headlines": [
+        {
+          "type": "thread_progression",
+          "threadId": "th_north_steppe_crisis_1788666895372",
+          "templateId": "north_steppe_crisis",
+          "threadName": "北境易主与争雄",
+          "category": "realm",
+          "priority": 85,
+          "title": "乌桓内哄 · 狼烟夜起",
+          "text": "乌桓二王相争，败卒数十帐流入大同边关投降。",
+          "chronicleText": "乌桓诸部争位交兵，塞北震动。",
+          "finalScore": 100
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_local_reform_shen_1788666895372",
+          "templateId": "local_reform_shen",
+          "threadName": "沈恪均田清赋",
+          "category": "court",
+          "priority": 82,
+          "title": "名族结怨 · 阻挠清丈",
+          "text": "清丈册籍在金陵被焚，沈恪拔剑怒斥士阀国蠹。",
+          "chronicleText": "江东士族抗逆新法，群起攻讦。",
+          "finalScore": 97
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_emperor_personal_pursuit_1788666895373",
+          "templateId": "emperor_personal_pursuit",
+          "threadName": "西苑长生与广厦之思",
+          "category": "palace",
+          "priority": 84,
+          "title": "谏官叩阙 · 泣血陈辞",
+          "text": "天子自省撤罢奢费之役，海内传诵明君之美。",
+          "chronicleText": "御史力谏省徭役，帝罢西苑工。",
+          "finalScore": 124
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 5
+    },
+    {
+      "turn": 4,
+      "headlines": [
+        {
+          "type": "thread_progression",
+          "threadId": "th_north_steppe_crisis_1788666895372",
+          "templateId": "north_steppe_crisis",
+          "threadName": "北境易主与争雄",
+          "category": "realm",
+          "priority": 92,
+          "title": "胡骑纵掠 · 边城告急",
+          "text": "大漠胡骑犯界，焚掠边堡，羽书一日三至。",
+          "chronicleText": "胡骑大掠云中，边民流离。",
+          "finalScore": 107
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_emperor_personal_pursuit_1788666895373",
+          "templateId": "emperor_personal_pursuit",
+          "threadName": "西苑长生与广厦之思",
+          "category": "palace",
+          "priority": 78,
+          "title": "黜退方士 · 归崇王道",
+          "text": "洗心更始，万邦属望，君德归正。",
+          "chronicleText": "帝放逐方士，省节内用。",
+          "finalScore": 118
+        },
+        {
+          "type": "royal_lifecycle",
+          "category": "palace",
+          "priority": 85,
+          "title": "【椒房有喜】",
+          "text": "太医奏报皇后有娠，后宫采办锦缎，群臣上笺称贺。",
+          "chronicleText": "皇后有娠，中外称庆。",
+          "finalScore": 110
+        }
+      ],
+      "playerAction": "【请增北军三万】",
+      "allEventsCount": 4
+    },
+    {
+      "turn": 5,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "realm",
+          "priority": 75,
+          "character": {
+            "id": "han_ce",
+            "name": "韩策",
+            "gender": "male",
+            "age": 47,
+            "alive": true,
+            "role": "frontier_general",
+            "office": "镇北大将军",
+            "region": "north",
+            "faction": "military",
+            "traits": [
+              "martial",
+              "ambitious"
+            ],
+            "ambition": 78,
+            "competence": 86,
+            "influence": 117,
+            "relationshipToEmperor": "favored",
+            "relationships": {
+              "wei_su": "rival",
+              "pei_jian": "rival"
+            },
+            "currentGoal": "开拓北境，受封万户侯",
+            "initialQuote": "“边关三万健儿，唯凭大将军令旗所向。”",
+            "stateQuote": "“边关健儿日夜操练，唯待天子号令勒石塞外。”",
+            "history": [
+              "登仕之初，任【镇北大将军】。",
+              "永安元年 秋 奉准增募北军精锐三万，军威益盛。",
+              "永安二年 春 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安二年 夏 出奇兵大破虏营，威震大漠。",
+              "永安二年 秋 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安三年 夏 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安四年 秋 奉准增募北军精锐三万，军威益盛。",
+              "永安五年 秋 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安五年 冬 巡阅八达岭边卡，督训塞防骁骑。"
+            ],
+            "memories": [
+              {
+                "turn": 3,
+                "desc": "帝准增兵三万之请，恩遇备隆",
+                "importance": 8
+              },
+              {
+                "turn": 15,
+                "desc": "帝准增兵三万之请，恩遇备隆",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【韩策阅兵】",
+          "text": "大将军韩策亲勒精骑三万大阅于长城之下，军容整肃，塞北游骑望风慑服。",
+          "chronicleText": "韩策大阅北军，边备肃严。",
+          "finalScore": 75
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_local_reform_shen_1788666895372",
+          "templateId": "local_reform_shen",
+          "threadName": "沈恪均田清赋",
+          "category": "court",
+          "priority": 90,
+          "title": "御笔乾断 · 圣眷独隆",
+          "text": "君臣相知，变法如燎原之火势不可挡。",
+          "chronicleText": "帝赐沈恪王命旗牌，严诫群臣。",
+          "finalScore": 105
+        },
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 68,
+          "character": {
+            "id": "wei_su",
+            "name": "魏肃",
+            "gender": "male",
+            "age": 60,
+            "alive": false,
+            "role": "chancellor",
+            "office": "中书令 · 首辅",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "conservative",
+              "devoted"
+            ],
+            "ambition": 45,
+            "competence": 80,
+            "influence": 99,
+            "relationshipToEmperor": "trusted",
+            "relationships": {
+              "han_ce": "rival"
+            },
+            "currentGoal": "平息朝议纷争，保国祚无虞",
+            "initialQuote": "“祖宗家法已具，朝廷唯在持重安民，慎勿轻动。”",
+            "stateQuote": "“国之大事在祀与戎，宁迟重，莫轻躁。”",
+            "history": [
+              "登仕之初，任【中书令 · 首辅】。",
+              "永安元年 夏 调停台阁争议，平理庶狱。",
+              "永安二年 春 调停台阁争议，平理庶狱。",
+              "永安三年 夏 调停台阁争议，平理庶狱。",
+              "永安三年 秋 调停台阁争议，平理庶狱。",
+              "永安三年 冬 调停台阁争议，平理庶狱。",
+              "永安四年 秋 调停台阁争议，平理庶狱。",
+              "永安五年 夏 积劳成疾，病逝于邸舍，享年60。"
+            ],
+            "memories": [
+              {
+                "turn": 7,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 11,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 13,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 17,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【魏肃调停】",
+          "text": "中书令魏肃召六卿会食都堂，从容弥缝各部纷争，庶政规矩肃然。",
+          "chronicleText": "首辅魏肃持重调和百僚，政令平顺。",
+          "finalScore": 68
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 3
+    },
+    {
+      "turn": 6,
+      "headlines": [
+        {
+          "type": "thread_progression",
+          "threadId": "th_north_steppe_crisis_1788666895372",
+          "templateId": "north_steppe_crisis",
+          "threadName": "北境易主与争雄",
+          "category": "realm",
+          "priority": 96,
+          "title": "大将军韩策勒石燕然",
+          "text": "韩策飞骑传捷，捷书所至百官称贺，军声大振。",
+          "chronicleText": "大将军韩策大破乌桓，塞北肃清。",
+          "finalScore": 111
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_sea_trade_merchant_rise_1788666895374",
+          "templateId": "sea_trade_merchant_rise",
+          "threadName": "海舶通商与顾氏金山",
+          "category": "court",
+          "priority": 80,
+          "title": "商贾输粮 · 万斛充饷",
+          "text": "金穴之富冠绝南邦，朝廷度支顿得宽舒。",
+          "chronicleText": "商贾顾源输银百万充国用。",
+          "finalScore": 95
+        },
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 76,
+          "character": {
+            "id": "shen_ke",
+            "name": "沈恪",
+            "gender": "male",
+            "age": 43,
+            "alive": true,
+            "role": "local_reformer",
+            "office": "河东巡抚兼按察使",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "reforming",
+              "upright"
+            ],
+            "ambition": 62,
+            "competence": 88,
+            "influence": 81,
+            "relationshipToEmperor": "favored",
+            "relationships": {
+              "pei_jian": "alliance"
+            },
+            "currentGoal": "清丈田亩，革除赋税积弊",
+            "initialQuote": "“天下旧弊丛生，非雷霆更化不可救。”",
+            "stateQuote": "“积弊深者疗之以猛药，虽受万夫指，无悔也。”",
+            "history": [
+              "登仕之初，任【河东巡抚兼按察使】。",
+              "永安元年 秋 严劾州县赋役弊端，申明均平法度。",
+              "永安二年 夏 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 春 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 夏 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 冬 严劾州县赋役弊端，申明均平法度。",
+              "永安四年 春 严劾州县赋役弊端，申明均平法度。",
+              "永安五年 秋 严劾州县赋役弊端，申明均平法度。"
+            ],
+            "memories": [],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【沈恪严察】",
+          "text": "沈恪巡历郡县，亲查常平仓与粮赋簿册，严惩欺隐小吏三十人，官箴为之悚栗。",
+          "chronicleText": "沈恪督理度支，澄汰积弊。",
+          "finalScore": 76
+        }
+      ],
+      "playerAction": "【请弛海禁通达外洋】",
+      "allEventsCount": 4
+    },
+    {
+      "turn": 7,
+      "headlines": [
+        {
+          "type": "thread_progression",
+          "threadId": "th_north_steppe_crisis_1788666895372",
+          "templateId": "north_steppe_crisis",
+          "threadName": "北境易主与争雄",
+          "category": "realm",
+          "priority": 86,
+          "title": "大漠肃清 · 四海受抚",
+          "text": "北方塞外平定，烽火久熄，民乐其业。",
+          "chronicleText": "北境大定，胡尘顿消。",
+          "finalScore": 101
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_local_reform_shen_1788666895372",
+          "templateId": "local_reform_shen",
+          "threadName": "沈恪均田清赋",
+          "category": "court",
+          "priority": 92,
+          "title": "更化大定 · 府库红腐",
+          "text": "中兴治道成型，史家称一代良相。",
+          "chronicleText": "天下均税更化大成，民殷国富。",
+          "finalScore": 107
+        },
+        {
+          "type": "royal_lifecycle",
+          "category": "palace",
+          "priority": 95,
+          "title": "【诞育麟儿】",
+          "text": "皇后顺诞皇子【宏业】，满月设宴，定为宗嗣。",
+          "chronicleText": "皇后诞皇子，天下大赦私债。",
+          "finalScore": 120
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 6
+    },
+    {
+      "turn": 8,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "realm",
+          "priority": 70,
+          "character": {
+            "id": "gu_yuan",
+            "name": "顾源",
+            "gender": "male",
+            "age": 51,
+            "alive": true,
+            "role": "merchant_magnate",
+            "office": "两浙市舶司总管 · 巨贾",
+            "region": "south",
+            "faction": "merchants",
+            "traits": [
+              "mercantile",
+              "tactful"
+            ],
+            "ambition": 70,
+            "competence": 82,
+            "influence": 116,
+            "relationshipToEmperor": "friendly",
+            "relationships": {
+              "wang_cheng": "close"
+            },
+            "currentGoal": "拓宽海运通商，得内廷特许盐引",
+            "initialQuote": "“四海金玉互通，自古未有闭关而能大富者。”",
+            "stateQuote": "“市舶通则四海金银归于中国，何乐而不为？”",
+            "history": [
+              "登仕之初，任【两浙市舶司总管 · 巨贾】。",
+              "永安元年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安元年 冬 泛海联通南洋商路，捐纳助修海塘。",
+              "永安二年 春 奉旨在两浙督办市舶，海利大通。",
+              "永安二年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安二年 冬 泛海联通南洋商路，捐纳助修海塘。",
+              "永安三年 夏 泛海联通南洋商路，捐纳助修海塘。",
+              "永安三年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安五年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安六年 春 泛海联通南洋商路，捐纳助修海塘。"
+            ],
+            "memories": [
+              {
+                "turn": 5,
+                "desc": "帝准通海之请，顾氏基业自此大昌",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【顾源市舶】",
+          "text": "顾氏船队自爪哇载香药珍珠数十万斛归港，完纳商税四万两，市舶司称其输纳勤笃。",
+          "chronicleText": "顾源海舶纳税助饷，市舶充盈。",
+          "finalScore": 70
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_frontier_general_rise_1788666895374",
+          "templateId": "frontier_general_rise",
+          "threadName": "边将韩策崛起",
+          "category": "court",
+          "priority": 84,
+          "title": "大将陈情 · 请增饷甲",
+          "text": "韩策奏疏言辞切切，六部百司就度支争执不下。",
+          "chronicleText": "韩策请增军资，中枢议度支。",
+          "finalScore": 99
+        },
+        {
+          "type": "royal_lifecycle",
+          "category": "palace",
+          "priority": 88,
+          "title": "【东宫开蒙】",
+          "text": "储君【承平】已届六龄，当择名臣辅导德器。",
+          "chronicleText": "储君六岁入阁读书，廷议择师。",
+          "finalScore": 113
+        }
+      ],
+      "playerAction": "【陈请停罢杂役慎守持重】",
+      "allEventsCount": 4
+    },
+    {
+      "turn": 9,
+      "headlines": [
+        {
+          "type": "thread_progression",
+          "threadId": "th_sea_trade_merchant_rise_1788666895374",
+          "templateId": "sea_trade_merchant_rise",
+          "threadName": "海舶通商与顾氏金山",
+          "category": "court",
+          "priority": 80,
+          "title": "江表磐石 · 赋税自专",
+          "text": "江表经济盘根错节，天下财税半出于此。",
+          "chronicleText": "东南豪阀合流，势压州郡。",
+          "finalScore": 95
+        },
+        {
+          "type": "royal_lifecycle",
+          "category": "palace",
+          "priority": 88,
+          "title": "【东宫开蒙】",
+          "text": "储君【承平】已届六龄，当择名臣辅导德器。",
+          "chronicleText": "储君六岁入阁读书，廷议择师。",
+          "finalScore": 113
+        },
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 76,
+          "character": {
+            "id": "shen_ke",
+            "name": "沈恪",
+            "gender": "male",
+            "age": 43,
+            "alive": true,
+            "role": "local_reformer",
+            "office": "河东巡抚兼按察使",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "reforming",
+              "upright"
+            ],
+            "ambition": 62,
+            "competence": 88,
+            "influence": 81,
+            "relationshipToEmperor": "favored",
+            "relationships": {
+              "pei_jian": "alliance"
+            },
+            "currentGoal": "清丈田亩，革除赋税积弊",
+            "initialQuote": "“天下旧弊丛生，非雷霆更化不可救。”",
+            "stateQuote": "“积弊深者疗之以猛药，虽受万夫指，无悔也。”",
+            "history": [
+              "登仕之初，任【河东巡抚兼按察使】。",
+              "永安元年 秋 严劾州县赋役弊端，申明均平法度。",
+              "永安二年 夏 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 春 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 夏 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 冬 严劾州县赋役弊端，申明均平法度。",
+              "永安四年 春 严劾州县赋役弊端，申明均平法度。",
+              "永安五年 秋 严劾州县赋役弊端，申明均平法度。"
+            ],
+            "memories": [],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【沈恪严察】",
+          "text": "沈恪巡历郡县，亲查常平仓与粮赋簿册，严惩欺隐小吏三十人，官箴为之悚栗。",
+          "chronicleText": "沈恪督理度支，澄汰积弊。",
+          "finalScore": 76
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 3
+    },
+    {
+      "turn": 10,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "realm",
+          "priority": 75,
+          "character": {
+            "id": "han_ce",
+            "name": "韩策",
+            "gender": "male",
+            "age": 47,
+            "alive": true,
+            "role": "frontier_general",
+            "office": "镇北大将军",
+            "region": "north",
+            "faction": "military",
+            "traits": [
+              "martial",
+              "ambitious"
+            ],
+            "ambition": 78,
+            "competence": 86,
+            "influence": 117,
+            "relationshipToEmperor": "favored",
+            "relationships": {
+              "wei_su": "rival",
+              "pei_jian": "rival"
+            },
+            "currentGoal": "开拓北境，受封万户侯",
+            "initialQuote": "“边关三万健儿，唯凭大将军令旗所向。”",
+            "stateQuote": "“边关健儿日夜操练，唯待天子号令勒石塞外。”",
+            "history": [
+              "登仕之初，任【镇北大将军】。",
+              "永安元年 秋 奉准增募北军精锐三万，军威益盛。",
+              "永安二年 春 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安二年 夏 出奇兵大破虏营，威震大漠。",
+              "永安二年 秋 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安三年 夏 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安四年 秋 奉准增募北军精锐三万，军威益盛。",
+              "永安五年 秋 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安五年 冬 巡阅八达岭边卡，督训塞防骁骑。"
+            ],
+            "memories": [
+              {
+                "turn": 3,
+                "desc": "帝准增兵三万之请，恩遇备隆",
+                "importance": 8
+              },
+              {
+                "turn": 15,
+                "desc": "帝准增兵三万之请，恩遇备隆",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【韩策阅兵】",
+          "text": "大将军韩策亲勒精骑三万大阅于长城之下，军容整肃，塞北游骑望风慑服。",
+          "chronicleText": "韩策大阅北军，边备肃严。",
+          "finalScore": 75
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_frontier_general_rise_1788666895374",
+          "templateId": "frontier_general_rise",
+          "threadName": "边将韩策崛起",
+          "category": "court",
+          "priority": 86,
+          "title": "言官劾将 · 尾大不掉",
+          "text": "裴简引祖制侃侃而谈，边庭闻之，将弁多有愤言。",
+          "chronicleText": "御史劾韩策专擅，边庭不平。",
+          "finalScore": 101
+        },
+        {
+          "type": "royal_lifecycle",
+          "category": "palace",
+          "priority": 88,
+          "title": "【东宫开蒙】",
+          "text": "储君【承平】已届六龄，当择名臣辅导德器。",
+          "chronicleText": "储君六岁入阁读书，廷议择师。",
+          "finalScore": 113
+        }
+      ],
+      "playerAction": "【参劾内臣外官通赂】",
+      "allEventsCount": 6
+    },
+    {
+      "turn": 11,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "realm",
+          "priority": 70,
+          "character": {
+            "id": "gu_yuan",
+            "name": "顾源",
+            "gender": "male",
+            "age": 51,
+            "alive": true,
+            "role": "merchant_magnate",
+            "office": "两浙市舶司总管 · 巨贾",
+            "region": "south",
+            "faction": "merchants",
+            "traits": [
+              "mercantile",
+              "tactful"
+            ],
+            "ambition": 70,
+            "competence": 82,
+            "influence": 116,
+            "relationshipToEmperor": "friendly",
+            "relationships": {
+              "wang_cheng": "close"
+            },
+            "currentGoal": "拓宽海运通商，得内廷特许盐引",
+            "initialQuote": "“四海金玉互通，自古未有闭关而能大富者。”",
+            "stateQuote": "“市舶通则四海金银归于中国，何乐而不为？”",
+            "history": [
+              "登仕之初，任【两浙市舶司总管 · 巨贾】。",
+              "永安元年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安元年 冬 泛海联通南洋商路，捐纳助修海塘。",
+              "永安二年 春 奉旨在两浙督办市舶，海利大通。",
+              "永安二年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安二年 冬 泛海联通南洋商路，捐纳助修海塘。",
+              "永安三年 夏 泛海联通南洋商路，捐纳助修海塘。",
+              "永安三年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安五年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安六年 春 泛海联通南洋商路，捐纳助修海塘。"
+            ],
+            "memories": [
+              {
+                "turn": 5,
+                "desc": "帝准通海之请，顾氏基业自此大昌",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【顾源市舶】",
+          "text": "顾氏船队自爪哇载香药珍珠数十万斛归港，完纳商税四万两，市舶司称其输纳勤笃。",
+          "chronicleText": "顾源海舶纳税助饷，市舶充盈。",
+          "finalScore": 70
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_sea_trade_merchant_rise_1788666895374",
+          "templateId": "sea_trade_merchant_rise",
+          "threadName": "海舶通商与顾氏金山",
+          "category": "court",
+          "priority": 85,
+          "title": "万舶云屯 · 海国大治",
+          "text": "开海之功垂诸后世，海防富庶兼济。",
+          "chronicleText": "海市大通，岁纳千万。",
+          "finalScore": 100
+        },
+        {
+          "type": "royal_lifecycle",
+          "category": "palace",
+          "priority": 85,
+          "title": "【椒房有喜】",
+          "text": "太医奏报皇后有娠，后宫采办锦缎，群臣上笺称贺。",
+          "chronicleText": "皇后有娠，中外称庆。",
+          "finalScore": 110
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 5
+    },
+    {
+      "turn": 12,
+      "headlines": [
+        {
+          "type": "thread_progression",
+          "threadId": "th_frontier_general_rise_1788666895374",
+          "templateId": "frontier_general_rise",
+          "threadName": "边将韩策崛起",
+          "category": "court",
+          "priority": 88,
+          "title": "边军鼓噪 · 挽留元帅",
+          "text": "石雄手刃鼓噪者三人，严令归营，朝野虚惊一场。",
+          "chronicleText": "边军哗动留帅，副将石雄抚定。",
+          "finalScore": 103
+        },
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 76,
+          "character": {
+            "id": "shen_ke",
+            "name": "沈恪",
+            "gender": "male",
+            "age": 43,
+            "alive": true,
+            "role": "local_reformer",
+            "office": "河东巡抚兼按察使",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "reforming",
+              "upright"
+            ],
+            "ambition": 62,
+            "competence": 88,
+            "influence": 81,
+            "relationshipToEmperor": "favored",
+            "relationships": {
+              "pei_jian": "alliance"
+            },
+            "currentGoal": "清丈田亩，革除赋税积弊",
+            "initialQuote": "“天下旧弊丛生，非雷霆更化不可救。”",
+            "stateQuote": "“积弊深者疗之以猛药，虽受万夫指，无悔也。”",
+            "history": [
+              "登仕之初，任【河东巡抚兼按察使】。",
+              "永安元年 秋 严劾州县赋役弊端，申明均平法度。",
+              "永安二年 夏 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 春 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 夏 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 冬 严劾州县赋役弊端，申明均平法度。",
+              "永安四年 春 严劾州县赋役弊端，申明均平法度。",
+              "永安五年 秋 严劾州县赋役弊端，申明均平法度。"
+            ],
+            "memories": [],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【沈恪严察】",
+          "text": "沈恪巡历郡县，亲查常平仓与粮赋簿册，严惩欺隐小吏三十人，官箴为之悚栗。",
+          "chronicleText": "沈恪督理度支，澄汰积弊。",
+          "finalScore": 76
+        },
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 72,
+          "character": {
+            "id": "pei_jian",
+            "name": "裴简",
+            "gender": "male",
+            "age": 39,
+            "alive": true,
+            "role": "censor",
+            "office": "左副都御史",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "incorruptible",
+              "upright"
+            ],
+            "ambition": 50,
+            "competence": 76,
+            "influence": 56,
+            "relationshipToEmperor": "neutral",
+            "relationships": {
+              "shen_ke": "alliance",
+              "han_ce": "rival"
+            },
+            "currentGoal": "弹劾权门，澄清吏治风宪",
+            "initialQuote": "“臣职在宪台，宁为玉碎，不作避事之木偶。”",
+            "stateQuote": "“白刃在前，亦不可废风宪之职。”",
+            "history": [
+              "登仕之初，任【左副都御史】。",
+              "永安二年 夏 上疏纠劾百官怠职，言辞凛然。",
+              "永安二年 冬 上疏纠劾百官怠职，言辞凛然。",
+              "永安三年 春 疏劾权门不法，名动公卿。",
+              "永安三年 秋 上疏纠劾百官怠职，言辞凛然。",
+              "永安三年 冬 上疏纠劾百官怠职，言辞凛然。",
+              "永安四年 夏 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 春 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 秋 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 秋 疏劾权门不法，名动公卿。",
+              "永安六年 春 上疏纠劾百官怠职，言辞凛然。"
+            ],
+            "memories": [
+              {
+                "turn": 9,
+                "desc": "直言弹劾伏阙蒙准，天下叹伏风节",
+                "importance": 8
+              },
+              {
+                "turn": 19,
+                "desc": "直言弹劾伏阙蒙准，天下叹伏风节",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【裴简谏诤】",
+          "text": "副都御史裴简伏阙上书，申论百官考成与风俗教化，直声震于阙下。",
+          "chronicleText": "裴简上疏严申官考，风纪一振。",
+          "finalScore": 72
+        }
+      ],
+      "playerAction": "【陈请停罢杂役慎守持重】",
+      "allEventsCount": 4
+    },
+    {
+      "turn": 13,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 76,
+          "character": {
+            "id": "shen_ke",
+            "name": "沈恪",
+            "gender": "male",
+            "age": 43,
+            "alive": true,
+            "role": "local_reformer",
+            "office": "河东巡抚兼按察使",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "reforming",
+              "upright"
+            ],
+            "ambition": 62,
+            "competence": 88,
+            "influence": 81,
+            "relationshipToEmperor": "favored",
+            "relationships": {
+              "pei_jian": "alliance"
+            },
+            "currentGoal": "清丈田亩，革除赋税积弊",
+            "initialQuote": "“天下旧弊丛生，非雷霆更化不可救。”",
+            "stateQuote": "“积弊深者疗之以猛药，虽受万夫指，无悔也。”",
+            "history": [
+              "登仕之初，任【河东巡抚兼按察使】。",
+              "永安元年 秋 严劾州县赋役弊端，申明均平法度。",
+              "永安二年 夏 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 春 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 夏 严劾州县赋役弊端，申明均平法度。",
+              "永安三年 冬 严劾州县赋役弊端，申明均平法度。",
+              "永安四年 春 严劾州县赋役弊端，申明均平法度。",
+              "永安五年 秋 严劾州县赋役弊端，申明均平法度。"
+            ],
+            "memories": [],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【沈恪严察】",
+          "text": "沈恪巡历郡县，亲查常平仓与粮赋簿册，严惩欺隐小吏三十人，官箴为之悚栗。",
+          "chronicleText": "沈恪督理度支，澄汰积弊。",
+          "finalScore": 76
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 1
+    },
+    {
+      "turn": 14,
+      "headlines": [
+        {
+          "type": "thread_progression",
+          "threadId": "th_frontier_general_rise_1788666895374",
+          "templateId": "frontier_general_rise",
+          "threadName": "边将韩策崛起",
+          "category": "court",
+          "priority": 85,
+          "title": "将门结党 · 各怀异心",
+          "text": "边镇渐成自立之风，中枢屡敕戒勉。",
+          "chronicleText": "将帅门党渐深，枢密莫制。",
+          "finalScore": 100
+        },
+        {
+          "type": "royal_lifecycle",
+          "category": "palace",
+          "priority": 90,
+          "title": "【明珠入掌】",
+          "text": "皇后诞下皇女，宫闱一片祥和欢欣。",
+          "chronicleText": "皇后诞公主，帝甚钟爱。",
+          "finalScore": 115
+        },
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 72,
+          "character": {
+            "id": "pei_jian",
+            "name": "裴简",
+            "gender": "male",
+            "age": 39,
+            "alive": true,
+            "role": "censor",
+            "office": "左副都御史",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "incorruptible",
+              "upright"
+            ],
+            "ambition": 50,
+            "competence": 76,
+            "influence": 56,
+            "relationshipToEmperor": "neutral",
+            "relationships": {
+              "shen_ke": "alliance",
+              "han_ce": "rival"
+            },
+            "currentGoal": "弹劾权门，澄清吏治风宪",
+            "initialQuote": "“臣职在宪台，宁为玉碎，不作避事之木偶。”",
+            "stateQuote": "“白刃在前，亦不可废风宪之职。”",
+            "history": [
+              "登仕之初，任【左副都御史】。",
+              "永安二年 夏 上疏纠劾百官怠职，言辞凛然。",
+              "永安二年 冬 上疏纠劾百官怠职，言辞凛然。",
+              "永安三年 春 疏劾权门不法，名动公卿。",
+              "永安三年 秋 上疏纠劾百官怠职，言辞凛然。",
+              "永安三年 冬 上疏纠劾百官怠职，言辞凛然。",
+              "永安四年 夏 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 春 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 秋 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 秋 疏劾权门不法，名动公卿。",
+              "永安六年 春 上疏纠劾百官怠职，言辞凛然。"
+            ],
+            "memories": [
+              {
+                "turn": 9,
+                "desc": "直言弹劾伏阙蒙准，天下叹伏风节",
+                "importance": 8
+              },
+              {
+                "turn": 19,
+                "desc": "直言弹劾伏阙蒙准，天下叹伏风节",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【裴简谏诤】",
+          "text": "副都御史裴简伏阙上书，申论百官考成与风俗教化，直声震于阙下。",
+          "chronicleText": "裴简上疏严申官考，风纪一振。",
+          "finalScore": 72
+        }
+      ],
+      "playerAction": "【陈请停罢杂役慎守持重】",
+      "allEventsCount": 3
+    },
+    {
+      "turn": 15,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 68,
+          "character": {
+            "id": "wei_su",
+            "name": "魏肃",
+            "gender": "male",
+            "age": 60,
+            "alive": false,
+            "role": "chancellor",
+            "office": "中书令 · 首辅",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "conservative",
+              "devoted"
+            ],
+            "ambition": 45,
+            "competence": 80,
+            "influence": 99,
+            "relationshipToEmperor": "trusted",
+            "relationships": {
+              "han_ce": "rival"
+            },
+            "currentGoal": "平息朝议纷争，保国祚无虞",
+            "initialQuote": "“祖宗家法已具，朝廷唯在持重安民，慎勿轻动。”",
+            "stateQuote": "“国之大事在祀与戎，宁迟重，莫轻躁。”",
+            "history": [
+              "登仕之初，任【中书令 · 首辅】。",
+              "永安元年 夏 调停台阁争议，平理庶狱。",
+              "永安二年 春 调停台阁争议，平理庶狱。",
+              "永安三年 夏 调停台阁争议，平理庶狱。",
+              "永安三年 秋 调停台阁争议，平理庶狱。",
+              "永安三年 冬 调停台阁争议，平理庶狱。",
+              "永安四年 秋 调停台阁争议，平理庶狱。",
+              "永安五年 夏 积劳成疾，病逝于邸舍，享年60。"
+            ],
+            "memories": [
+              {
+                "turn": 7,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 11,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 13,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 17,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【魏肃调停】",
+          "text": "中书令魏肃召六卿会食都堂，从容弥缝各部纷争，庶政规矩肃然。",
+          "chronicleText": "首辅魏肃持重调和百僚，政令平顺。",
+          "finalScore": 68
+        },
+        {
+          "type": "royal_lifecycle",
+          "category": "palace",
+          "priority": 85,
+          "title": "【椒房有喜】",
+          "text": "太医奏报皇后有娠，后宫采办锦缎，群臣上笺称贺。",
+          "chronicleText": "皇后有娠，中外称庆。",
+          "finalScore": 110
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 2
+    },
+    {
+      "turn": 16,
+      "headlines": [
+        {
+          "category": "realm",
+          "title": "【天下粗安】",
+          "text": "四海无惊，州郡按期输纳赋粮，关塞烽火久息。"
+        },
+        {
+          "category": "court",
+          "title": "【百僚恪勤】",
+          "text": "六曹文案循例而行，百官奉敕各供其职，都堂无大事。"
+        },
+        {
+          "category": "palace",
+          "title": "【宫闱穆穆】",
+          "text": "内廷诸司各守本分，圣躬起居如常，六宫肃静。"
+        }
+      ],
+      "playerAction": "【请增北军三万】",
+      "allEventsCount": 0
+    },
+    {
+      "turn": 17,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 72,
+          "character": {
+            "id": "pei_jian",
+            "name": "裴简",
+            "gender": "male",
+            "age": 39,
+            "alive": true,
+            "role": "censor",
+            "office": "左副都御史",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "incorruptible",
+              "upright"
+            ],
+            "ambition": 50,
+            "competence": 76,
+            "influence": 56,
+            "relationshipToEmperor": "neutral",
+            "relationships": {
+              "shen_ke": "alliance",
+              "han_ce": "rival"
+            },
+            "currentGoal": "弹劾权门，澄清吏治风宪",
+            "initialQuote": "“臣职在宪台，宁为玉碎，不作避事之木偶。”",
+            "stateQuote": "“白刃在前，亦不可废风宪之职。”",
+            "history": [
+              "登仕之初，任【左副都御史】。",
+              "永安二年 夏 上疏纠劾百官怠职，言辞凛然。",
+              "永安二年 冬 上疏纠劾百官怠职，言辞凛然。",
+              "永安三年 春 疏劾权门不法，名动公卿。",
+              "永安三年 秋 上疏纠劾百官怠职，言辞凛然。",
+              "永安三年 冬 上疏纠劾百官怠职，言辞凛然。",
+              "永安四年 夏 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 春 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 秋 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 秋 疏劾权门不法，名动公卿。",
+              "永安六年 春 上疏纠劾百官怠职，言辞凛然。"
+            ],
+            "memories": [
+              {
+                "turn": 9,
+                "desc": "直言弹劾伏阙蒙准，天下叹伏风节",
+                "importance": 8
+              },
+              {
+                "turn": 19,
+                "desc": "直言弹劾伏阙蒙准，天下叹伏风节",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【裴简谏诤】",
+          "text": "副都御史裴简伏阙上书，申论百官考成与风俗教化，直声震于阙下。",
+          "chronicleText": "裴简上疏严申官考，风纪一振。",
+          "finalScore": 72
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 1
+    },
+    {
+      "turn": 18,
+      "headlines": [
+        {
+          "type": "character_death",
+          "category": "court",
+          "priority": 95,
+          "character": {
+            "id": "wei_su",
+            "name": "魏肃",
+            "gender": "male",
+            "age": 60,
+            "alive": false,
+            "role": "chancellor",
+            "office": "中书令 · 首辅",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "conservative",
+              "devoted"
+            ],
+            "ambition": 45,
+            "competence": 80,
+            "influence": 99,
+            "relationshipToEmperor": "trusted",
+            "relationships": {
+              "han_ce": "rival"
+            },
+            "currentGoal": "平息朝议纷争，保国祚无虞",
+            "initialQuote": "“祖宗家法已具，朝廷唯在持重安民，慎勿轻动。”",
+            "stateQuote": "“国之大事在祀与戎，宁迟重，莫轻躁。”",
+            "history": [
+              "登仕之初，任【中书令 · 首辅】。",
+              "永安元年 夏 调停台阁争议，平理庶狱。",
+              "永安二年 春 调停台阁争议，平理庶狱。",
+              "永安三年 夏 调停台阁争议，平理庶狱。",
+              "永安三年 秋 调停台阁争议，平理庶狱。",
+              "永安三年 冬 调停台阁争议，平理庶狱。",
+              "永安四年 秋 调停台阁争议，平理庶狱。",
+              "永安五年 夏 积劳成疾，病逝于邸舍，享年60。"
+            ],
+            "memories": [
+              {
+                "turn": 7,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 11,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 13,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              },
+              {
+                "turn": 17,
+                "desc": "帝从老臣忠言，省徭节俭",
+                "importance": 7
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【魏肃病逝】",
+          "text": "前中书令 · 首辅【魏肃】病终于任，享年60。自践仕途历辅朝政数十年，朝野闻讯无不震悼。",
+          "chronicleText": "【魏肃】卒于邸，谥赐哀荣。",
+          "finalScore": 135
+        },
+        {
+          "type": "royal_lifecycle",
+          "category": "palace",
+          "priority": 90,
+          "title": "【明珠入掌】",
+          "text": "皇后诞下皇女，宫闱一片祥和欢欣。",
+          "chronicleText": "皇后诞公主，帝甚钟爱。",
+          "finalScore": 115
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_heir_growth_destiny_1788666895375",
+          "templateId": "heir_growth_destiny",
+          "threadName": "东宫储嗣经略",
+          "category": "court",
+          "priority": 86,
+          "title": "选置少傅 · 储宫定序",
+          "text": "少傅日侍讲读，东宫规行矩步，海内属望。",
+          "chronicleText": "帝命重臣入侍东宫，讲读经史。",
+          "finalScore": 101
+        }
+      ],
+      "playerAction": "【陈请停罢杂役慎守持重】",
+      "allEventsCount": 4
+    },
+    {
+      "turn": 19,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "realm",
+          "priority": 75,
+          "character": {
+            "id": "han_ce",
+            "name": "韩策",
+            "gender": "male",
+            "age": 47,
+            "alive": true,
+            "role": "frontier_general",
+            "office": "镇北大将军",
+            "region": "north",
+            "faction": "military",
+            "traits": [
+              "martial",
+              "ambitious"
+            ],
+            "ambition": 78,
+            "competence": 86,
+            "influence": 117,
+            "relationshipToEmperor": "favored",
+            "relationships": {
+              "wei_su": "rival",
+              "pei_jian": "rival"
+            },
+            "currentGoal": "开拓北境，受封万户侯",
+            "initialQuote": "“边关三万健儿，唯凭大将军令旗所向。”",
+            "stateQuote": "“边关健儿日夜操练，唯待天子号令勒石塞外。”",
+            "history": [
+              "登仕之初，任【镇北大将军】。",
+              "永安元年 秋 奉准增募北军精锐三万，军威益盛。",
+              "永安二年 春 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安二年 夏 出奇兵大破虏营，威震大漠。",
+              "永安二年 秋 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安三年 夏 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安四年 秋 奉准增募北军精锐三万，军威益盛。",
+              "永安五年 秋 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安五年 冬 巡阅八达岭边卡，督训塞防骁骑。"
+            ],
+            "memories": [
+              {
+                "turn": 3,
+                "desc": "帝准增兵三万之请，恩遇备隆",
+                "importance": 8
+              },
+              {
+                "turn": 15,
+                "desc": "帝准增兵三万之请，恩遇备隆",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【韩策阅兵】",
+          "text": "大将军韩策亲勒精骑三万大阅于长城之下，军容整肃，塞北游骑望风慑服。",
+          "chronicleText": "韩策大阅北军，边备肃严。",
+          "finalScore": 75
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_heir_growth_destiny_1788666895375",
+          "templateId": "heir_growth_destiny",
+          "threadName": "东宫储嗣经略",
+          "category": "court",
+          "priority": 85,
+          "title": "皇储进陈 · 独展机杼",
+          "text": "天子展阅称善，传示内阁百官，朝野翕然归心。",
+          "chronicleText": "皇储具折条陈天下大计。",
+          "finalScore": 100
+        },
+        {
+          "type": "royal_lifecycle",
+          "category": "palace",
+          "priority": 82,
+          "title": "【帝师授业】",
+          "text": "储君拜【沈恪】为少傅师席，师生情契日厚。",
+          "chronicleText": "硕学大臣入东宫为储君日讲经史。",
+          "finalScore": 107
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 7
+    },
+    {
+      "turn": 20,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "realm",
+          "priority": 75,
+          "character": {
+            "id": "han_ce",
+            "name": "韩策",
+            "gender": "male",
+            "age": 47,
+            "alive": true,
+            "role": "frontier_general",
+            "office": "镇北大将军",
+            "region": "north",
+            "faction": "military",
+            "traits": [
+              "martial",
+              "ambitious"
+            ],
+            "ambition": 78,
+            "competence": 86,
+            "influence": 117,
+            "relationshipToEmperor": "favored",
+            "relationships": {
+              "wei_su": "rival",
+              "pei_jian": "rival"
+            },
+            "currentGoal": "开拓北境，受封万户侯",
+            "initialQuote": "“边关三万健儿，唯凭大将军令旗所向。”",
+            "stateQuote": "“边关健儿日夜操练，唯待天子号令勒石塞外。”",
+            "history": [
+              "登仕之初，任【镇北大将军】。",
+              "永安元年 秋 奉准增募北军精锐三万，军威益盛。",
+              "永安二年 春 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安二年 夏 出奇兵大破虏营，威震大漠。",
+              "永安二年 秋 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安三年 夏 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安四年 秋 奉准增募北军精锐三万，军威益盛。",
+              "永安五年 秋 巡阅八达岭边卡，督训塞防骁骑。",
+              "永安五年 冬 巡阅八达岭边卡，督训塞防骁骑。"
+            ],
+            "memories": [
+              {
+                "turn": 3,
+                "desc": "帝准增兵三万之请，恩遇备隆",
+                "importance": 8
+              },
+              {
+                "turn": 15,
+                "desc": "帝准增兵三万之请，恩遇备隆",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【韩策阅兵】",
+          "text": "大将军韩策亲勒精骑三万大阅于长城之下，军容整肃，塞北游骑望风慑服。",
+          "chronicleText": "韩策大阅北军，边备肃严。",
+          "finalScore": 75
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_sea_trade_merchant_rise_1788666895375",
+          "templateId": "sea_trade_merchant_rise",
+          "threadName": "海舶通商与顾氏金山",
+          "category": "court",
+          "priority": 76,
+          "title": "阀阅朱陈 · 士商一体",
+          "text": "冠盖云集六朝金粉，士大夫与金穴自此同体。",
+          "chronicleText": "陈郡谢氏与商贾顾氏通婚结盟。",
+          "finalScore": 91
+        }
+      ],
+      "playerAction": "【参劾内臣外官通赂】",
+      "allEventsCount": 2
+    },
+    {
+      "turn": 21,
+      "headlines": [
+        {
+          "type": "character_action",
+          "category": "realm",
+          "priority": 70,
+          "character": {
+            "id": "gu_yuan",
+            "name": "顾源",
+            "gender": "male",
+            "age": 51,
+            "alive": true,
+            "role": "merchant_magnate",
+            "office": "两浙市舶司总管 · 巨贾",
+            "region": "south",
+            "faction": "merchants",
+            "traits": [
+              "mercantile",
+              "tactful"
+            ],
+            "ambition": 70,
+            "competence": 82,
+            "influence": 116,
+            "relationshipToEmperor": "friendly",
+            "relationships": {
+              "wang_cheng": "close"
+            },
+            "currentGoal": "拓宽海运通商，得内廷特许盐引",
+            "initialQuote": "“四海金玉互通，自古未有闭关而能大富者。”",
+            "stateQuote": "“市舶通则四海金银归于中国，何乐而不为？”",
+            "history": [
+              "登仕之初，任【两浙市舶司总管 · 巨贾】。",
+              "永安元年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安元年 冬 泛海联通南洋商路，捐纳助修海塘。",
+              "永安二年 春 奉旨在两浙督办市舶，海利大通。",
+              "永安二年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安二年 冬 泛海联通南洋商路，捐纳助修海塘。",
+              "永安三年 夏 泛海联通南洋商路，捐纳助修海塘。",
+              "永安三年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安五年 秋 泛海联通南洋商路，捐纳助修海塘。",
+              "永安六年 春 泛海联通南洋商路，捐纳助修海塘。"
+            ],
+            "memories": [
+              {
+                "turn": 5,
+                "desc": "帝准通海之请，顾氏基业自此大昌",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【顾源市舶】",
+          "text": "顾氏船队自爪哇载香药珍珠数十万斛归港，完纳商税四万两，市舶司称其输纳勤笃。",
+          "chronicleText": "顾源海舶纳税助饷，市舶充盈。",
+          "finalScore": 70
+        },
+        {
+          "type": "thread_progression",
+          "threadId": "th_heir_growth_destiny_1788666895375",
+          "templateId": "heir_growth_destiny",
+          "threadName": "东宫储嗣经略",
+          "category": "court",
+          "priority": 90,
+          "title": "孝慈仁闻 · 储嗣磐石",
+          "text": "宗庙磐石安稳，后顾无虞。",
+          "chronicleText": "皇太子仁明有度，物望所归。",
+          "finalScore": 105
+        },
+        {
+          "type": "character_action",
+          "category": "court",
+          "priority": 72,
+          "character": {
+            "id": "pei_jian",
+            "name": "裴简",
+            "gender": "male",
+            "age": 39,
+            "alive": true,
+            "role": "censor",
+            "office": "左副都御史",
+            "region": "central",
+            "faction": "civil",
+            "traits": [
+              "incorruptible",
+              "upright"
+            ],
+            "ambition": 50,
+            "competence": 76,
+            "influence": 56,
+            "relationshipToEmperor": "neutral",
+            "relationships": {
+              "shen_ke": "alliance",
+              "han_ce": "rival"
+            },
+            "currentGoal": "弹劾权门，澄清吏治风宪",
+            "initialQuote": "“臣职在宪台，宁为玉碎，不作避事之木偶。”",
+            "stateQuote": "“白刃在前，亦不可废风宪之职。”",
+            "history": [
+              "登仕之初，任【左副都御史】。",
+              "永安二年 夏 上疏纠劾百官怠职，言辞凛然。",
+              "永安二年 冬 上疏纠劾百官怠职，言辞凛然。",
+              "永安三年 春 疏劾权门不法，名动公卿。",
+              "永安三年 秋 上疏纠劾百官怠职，言辞凛然。",
+              "永安三年 冬 上疏纠劾百官怠职，言辞凛然。",
+              "永安四年 夏 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 春 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 秋 上疏纠劾百官怠职，言辞凛然。",
+              "永安五年 秋 疏劾权门不法，名动公卿。",
+              "永安六年 春 上疏纠劾百官怠职，言辞凛然。"
+            ],
+            "memories": [
+              {
+                "turn": 9,
+                "desc": "直言弹劾伏阙蒙准，天下叹伏风节",
+                "importance": 8
+              },
+              {
+                "turn": 19,
+                "desc": "直言弹劾伏阙蒙准，天下叹伏风节",
+                "importance": 8
+              }
+            ],
+            "hasNewEvent": false,
+            "lastEventTurn": 1
+          },
+          "title": "【裴简谏诤】",
+          "text": "副都御史裴简伏阙上书，申论百官考成与风俗教化，直声震于阙下。",
+          "chronicleText": "裴简上疏严申官考，风纪一振。",
+          "finalScore": 72
+        }
+      ],
+      "playerAction": null,
+      "allEventsCount": 4
+    }
+  ]
+}

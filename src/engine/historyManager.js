@@ -1,24 +1,25 @@
-// Prototype 0.2 史册因果编年史管理器 (HistoryManager)
-// 记录清晰的因果链条：原因 / 局势背景 → 圣意决断 → 产生后果与后遗状态
+// 《一朝天子》Prototype 0.3 史册编年管理器 (HistoryManager)
+// 忠实记录《实录》起居注，按时间归档天下大势、朝臣荣辱与天家春秋 (Section 56)
 
 import { BALANCE } from '../data/balance.js';
 
 export class HistoryManager {
-  constructor(eraName = '永和') {
+  constructor(eraName = '永安') {
     this.eraName = eraName;
-    this.entries = []; // [{ turn, timeText, title, text, type, tag }]
+    this.entries = []; // [{ turn, year, season, timeText, type, title, text }]
   }
 
-  reset(eraName) {
-    if (eraName) this.eraName = eraName;
+  reset(eraName = '永安') {
+    this.eraName = eraName;
     this.entries = [];
   }
 
-  getYearSeasonText(turn) {
-    const year = Math.floor((turn - 1) / BALANCE.ROUNDS_PER_YEAR) + 1;
-    const season = BALANCE.SEASONS[(turn - 1) % BALANCE.ROUNDS_PER_YEAR];
-    const yearChinese = this.toChineseNumber(year);
-    return `${this.eraName}${yearChinese}年 ${season}`;
+  getYear(turn) {
+    return Math.floor((turn - 1) / BALANCE.ROUNDS_PER_YEAR) + 1;
+  }
+
+  getSeason(turn) {
+    return BALANCE.SEASONS[(turn - 1) % BALANCE.ROUNDS_PER_YEAR];
   }
 
   toChineseNumber(num) {
@@ -30,76 +31,87 @@ export class HistoryManager {
     return digits[tens] + '十' + (ones === 0 ? '' : digits[ones]);
   }
 
-  recordCoronation() {
+  getYearSeasonText(turn, currentEra = null) {
+    const era = currentEra || this.eraName;
+    const year = this.getYear(turn);
+    const season = this.getSeason(turn);
+    const yearText = this.toChineseNumber(year);
+    return `${era}${yearText}年 ${season}`;
+  }
+
+  recordCoronation(dynasty, era, age) {
+    this.eraName = era;
     this.entries.push({
       turn: 1,
-      timeText: `${this.eraName}元年 春`,
-      type: 'coronation',
-      title: '新帝践祚',
-      text: '受命于天，临御万邦。天下尚安，江南岁稔，朝臣待敕。'
+      year: 1,
+      season: '春',
+      timeText: `${era}元年 春`,
+      type: 'succession',
+      title: '先帝新丧 · 嗣皇帝登极',
+      text: `${dynasty}先帝龙驭宾天，皇太子于太极殿即皇帝位，年二十九，受命于天，改元${era}。`
     });
   }
 
-  // 记录出牌因果链 (原因 → 行为 → 后果)
-  recordCausalAction(turn, situationName, cardName, historyText, residueName = null) {
-    const timeText = this.getYearSeasonText(turn);
-    let fullText = '';
-    if (situationName) {
-      fullText = `针对【${situationName}】，帝诏行【${cardName}】。${historyText}`;
-    } else {
-      fullText = `帝行【${cardName}】。${historyText}`;
-    }
-
-    if (residueName) {
-      fullText += ` 因而种下【${residueName}】之因。`;
-    }
-
+  recordPlayerAction(turn, proposalTitle, sourceDept, feedback, era = null) {
+    const timeText = this.getYearSeasonText(turn, era);
     this.entries.push({
       turn,
+      year: this.getYear(turn),
+      season: this.getSeason(turn),
       timeText,
       type: 'action',
-      title: situationName ? `应对【${situationName}】` : `诏行【${cardName}】`,
-      text: fullText
+      title: `御批：${proposalTitle}`,
+      text: `帝朱批【${proposalTitle}】(${sourceDept})。${feedback}`
     });
   }
 
-  // 记录放任恶化
-  recordNeglect(turn, situationName, stageText, historyText) {
-    const timeText = this.getYearSeasonText(turn);
+  recordAdjourn(turn, era = null) {
+    const timeText = this.getYearSeasonText(turn, era);
     this.entries.push({
       turn,
+      year: this.getYear(turn),
+      season: this.getSeason(turn),
       timeText,
-      type: 'neglect',
-      title: `【${situationName}】放任恶化`,
-      text: `朝廷此前未予处置，【${situationName}】已由${stageText}。${historyText}`
+      type: 'adjourn',
+      title: '退朝无为 · 诸司奉例',
+      text: '季内未降特旨，天子垂拱穆然，中枢六卿依律条公文循例行事。'
     });
   }
 
-  // 记录年度定策
-  recordPolicy(turn, policyName, desc) {
-    const timeText = this.getYearSeasonText(turn);
+  recordWorldEvent(turn, headline, text, category = 'realm', era = null) {
+    const timeText = this.getYearSeasonText(turn, era);
     this.entries.push({
       turn,
+      year: this.getYear(turn),
+      season: this.getSeason(turn),
       timeText,
-      type: 'policy',
-      title: `朝议定策：${policyName}`,
-      text: `岁末召群臣合议，定国策为【${policyName}】。${desc}`
+      type: category,
+      title: headline,
+      text
     });
   }
 
-  // 记录终局
-  recordEnding(turn, isVictory, reason) {
-    const timeText = this.getYearSeasonText(turn);
+  recordSuccession(turn, newEra, newName) {
+    this.eraName = newEra;
+    const timeText = this.getYearSeasonText(turn, newEra);
     this.entries.push({
       turn,
+      year: this.getYear(turn),
+      season: this.getSeason(turn),
       timeText,
-      type: isVictory ? 'victory' : 'defeat',
-      title: isVictory ? '江山暂安' : '社稷倾覆',
-      text: isVictory ? '在位四十载四海宴然，终成一代治世令主。' : `国祚中绝。${reason}。`
+      type: 'succession',
+      title: `大统更始 · ${newEra}改元`,
+      text: `皇嗣【${newName}】即大皇帝位，御皇极门受百官朝贺，颁恩诏大赦天下，宣布改元【${newEra}】。`
     });
   }
 
   getAllEntries() {
     return this.entries;
+  }
+
+  restore(data) {
+    if (!data) return;
+    this.eraName = data.eraName || '永安';
+    this.entries = Array.isArray(data.entries) ? [...data.entries] : [];
   }
 }

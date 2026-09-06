@@ -1,13 +1,15 @@
-// Prototype 0.2 核心全量自动化验证脚本
-import { GameState } from '../src/game.js';
-import { CARDS } from '../src/data/cards.js';
-import { SITUATIONS } from '../src/data/situations.js';
-import { RESIDUES } from '../src/data/residues.js';
-import { POLICIES } from '../src/data/policies.js';
-import { BALANCE } from '../src/data/balance.js';
-import { InteractionResolver } from '../src/engine/interactionResolver.js';
+// 《一朝天子》Prototype 0.3 全量自动化验证与推演脚本
+// 包含 100 季世界自然演化测试、20 季纯旁观验收、6 大标准场景验证与 Telemetry 0.3 统计
 
-// Mock localStorage
+import { GameState } from '../src/game.js';
+import { CHARACTER_TEMPLATES } from '../src/data/characterTemplates.js';
+import { THREAD_TEMPLATES } from '../src/data/threadTemplates.js';
+import { EVENT_TEMPLATES } from '../src/data/eventTemplates.js';
+import { PROPOSAL_TEMPLATES } from '../src/data/proposalTemplates.js';
+import { ROYAL_EVENTS } from '../src/data/royalEvents.js';
+import { BALANCE } from '../src/data/balance.js';
+
+// Mock localStorage for Node.js test environment
 globalThis.localStorage = {
   store: {},
   getItem(k) { return this.store[k] || null; },
@@ -16,8 +18,8 @@ globalThis.localStorage = {
   clear() { this.store = {}; }
 };
 
-console.log('================ 开始《一朝天子》Prototype 0.2 核心自动化验证 ================');
-console.log(`配置检查：卡牌 ${CARDS.length} 张，局势 ${SITUATIONS.length} 种，后遗状态 ${Object.keys(RESIDUES).length} 种，年度国策 ${Object.keys(POLICIES).length} 种。`);
+console.log('================ 开始《一朝天子》Prototype 0.3 核心自动化验证 ================');
+console.log(`配置检查：人物模板 ${CHARACTER_TEMPLATES.length} 种，故事线程 ${Object.keys(THREAD_TEMPLATES).length} 条，世界事件 ${EVENT_TEMPLATES.length} 种，御前奏折 ${PROPOSAL_TEMPLATES.length} 种，皇室事件 ${ROYAL_EVENTS.length} 种。`);
 
 let passedTests = 0;
 let totalTests = 0;
@@ -33,224 +35,147 @@ function assert(condition, message) {
   }
 }
 
-// ---------------- 测试 1: 真实实体牌库与无重复抽牌 ----------------
-console.log('\n--- 测试 1: 真实实体牌库与无重复抽牌 ---');
-const game = new GameState('seed_deck_test');
-game.startNewGame('seed_deck_test');
+// ---------------- 测试 1: 开局王朝构建与天家初始状态 ----------------
+console.log('\n--- 测试 1: 开局王朝构建与天家初始状态 ---');
+const game = new GameState('test_init_seed_03');
+game.startNewGame('test_init_seed_03');
 
-assert(game.deckManager.hand.length === 5, '首轮手牌为 5 张');
-assert(game.deckManager.drawPile.length === 19, '24张实体牌库抽5张后剩余19张 (24-5=19)');
-const uniqueHandIds = new Set(game.deckManager.hand.map(c => c.id));
-assert(uniqueHandIds.size === 5, '手牌中无同名牌重复');
-assert(game.deckManager.handBeforePlay.length === 5, '出牌前完整快照包含 5 张手牌 (已修复 0.1 Telemetry 缺陷)');
+const emp = game.world.royalFamilyManager.emperor;
+assert(emp && emp.age >= 26 && emp.age <= 34, `皇帝初始年龄在 26~34 岁之间 (实际: ${emp.age} 岁)`);
+assert(emp.traits.length >= 1, `皇帝拥有初始性格特征: 【${emp.traits.join('、')}】`);
+assert(game.world.royalFamilyManager.empress !== null, '开局生成正宫皇后');
+assert(game.world.royalFamilyManager.getHeir() !== null, '开局预设皇长子储君');
+assert(game.world.characterManager.getActive().length >= 6, `开局活跃朝野名宿不少于 6 人 (实际: ${game.world.characterManager.getActive().length} 人)`);
+assert(game.world.proposalManager.currentProposals.length === 5, '首季御案呈送 5 份奏折');
+assert(game.world.newsManager.currentHeadlines.length === 3, '首季呈现 3 条天下纪事头条');
 
-// ---------------- 测试 2: 目标自动锁定与有效性判定 (Section 1) ----------------
-console.log('\n--- 测试 2: 目标自动锁定与有效性判定 ---');
-// 清空并只设置【北境犯边】
-game.situationManager.clearAll();
-game.situationManager.addSituation('northern_incursion');
-game.deckManager.forceCardToHand('dispatch_troops_north');
+// ---------------- 测试 2: 留中待议机制 (Section 60) ----------------
+console.log('\n--- 测试 2: 留中待议机制 ---');
+const propToKeep = game.world.proposalManager.currentProposals[0];
+game.toggleKeepProposal(propToKeep.id);
+assert(game.world.proposalManager.keptProposal && game.world.proposalManager.keptProposal.id === propToKeep.id, '成功将奏折标记为【留中待议】');
 
-// 玩家点击【调兵北上】
-game.selectCard('dispatch_troops_north');
-assert(game.selectedSituationId === 'northern_incursion', '唯一明显合法目标自动锁定为【北境犯边】');
-assert(game.autoTargeted === true, '标记为自动索敌锁定 autoTargeted: true');
-
-// 执行出牌
-const playRes = game.playSelectedCard();
-assert(playRes.success === true, '成功打出【调兵北上】');
-assert(playRes.targetSituation && playRes.targetSituation.id === 'northern_incursion', '明确作用于【北境犯边】，杜绝语义落空');
-assert(playRes.quality === 'excellent', '交互评级为 excellent (极有效)');
-assert(game.residueManager.hasResidue('weary_army'), '成功种下因果：获得后遗状态【边军疲惫】');
-
-// ---------------- 测试 3: 局势三阶段压力与放任离散后果 (Section 4 & 23) ----------------
-console.log('\n--- 测试 3: 局势三阶段压力与放任离散后果 ---');
-game.startNewGame('seed_neglect_test');
-game.situationManager.clearAll();
-game.situationManager.addSituation('northern_incursion');
-const sit = game.situationManager.getActive()[0];
-assert(sit.stage === 1, '局势初始阶段为 1 阶 (征兆)');
-
-// 玩家打一张与北境无关的牌 (如劝农垦荒)，故意放任北境
-game.deckManager.forceCardToHand('encourage_reclamation');
-game.selectCard('encourage_reclamation');
-game.playSelectedCard();
-
-// 退朝，结算放任
+// 退朝进入下一季
 game.adjournCourt();
-const sitAfter = game.situationManager.getActive().find(s => s.id === 'northern_incursion');
-assert(sitAfter && sitAfter.stage === 2, '未予处理导致【北境犯边】恶化至第 2 阶 (边关失守)');
-assert(game.pendingNeglectLogs.length > 0, '生成放任恶化事件记录');
+assert(game.world.turn === 2, '成功退朝步入第 2 季');
+assert(game.world.proposalManager.currentProposals.some(p => p.id === propToKeep.id), '留中待议的奏折成功保留在次季 5 份奏折中');
 
-// 再次放任
-game.deckManager.forceCardToHand('tax_relief');
-game.selectCard('tax_relief');
-game.playSelectedCard();
-game.adjournCourt();
-const sitAfter2 = game.situationManager.getActive().find(s => s.id === 'northern_incursion');
-assert(sitAfter2 && sitAfter2.stage === 3, '连续放任导致【北境犯边】恶化至第 3 阶 (大战将起)');
+// ---------------- 测试 3: 朱批决策与 CausalHook 种植 (Section 61) ----------------
+console.log('\n--- 测试 3: 朱批决策与 CausalHook 种植 ---');
+if (!game.world.proposalManager.currentProposals.some(p => p.id === 'petition_han_ce_reinforce')) {
+  const tmpl = PROPOSAL_TEMPLATES.find(p => p.id === 'petition_han_ce_reinforce');
+  game.world.proposalManager.currentProposals[0] = { ...tmpl, isKept: false };
+}
+game.selectProposal('petition_han_ce_reinforce');
+game.enactSelectedProposal();
 
-// 第三次放任：触发危急突破升级为【边境战争】
-game.deckManager.forceCardToHand('tax_relief');
-game.selectCard('tax_relief');
-game.playSelectedCard();
-game.adjournCourt();
-const hasBorderWar = game.situationManager.getActive().some(s => s.id === 'border_war');
-assert(hasBorderWar === true, '放任到顶成功升级为重大危机【边境战争】');
+assert(game.world.causalHookManager.has('han_ce_reinforced'), '朱批【请增北军三万】成功种植长效因果 Hook: han_ce_reinforced');
+const han = game.world.characterManager.get('han_ce');
+assert(han.influence > 68, `韩策影响力因增兵提升 (实际: ${han.influence})`);
+assert(han.history.length >= 2, '韩策生平简史自动记录此次增兵诏书');
 
-// ---------------- 测试 4: 四大标准测试场景 (Section 35) ----------------
-console.log('\n--- 测试 4: 四大标准预设场景测试 ---');
+// ---------------- 测试 4: 核心验收测试 - 纯旁观 20 季度世界自运转 (Section 4 & 72 Test A) ----------------
+console.log('\n--- 测试 4: 核心验收测试 - 纯旁观 20 季度世界自运转 (Test A) ---');
+const spectatorMetrics = game.setupScenarioTestA();
+console.log('旁观 20 季指标:', spectatorMetrics);
 
-// Test A: 黄河水患
-game.setupScenarioTestA();
-assert(game.situationManager.getActive().length === 1 && game.situationManager.getActive()[0].id === 'yellow_river_flood', 'Test A: 场上仅有黄河水患');
-assert(game.situationManager.getActive()[0].stage === 2, 'Test A: 黄河水患处于第 2 阶 (恶化)');
-assert(game.deckManager.hand.some(c => c.id === 'granary_relief'), 'Test A: 手牌包含【开仓赈济】');
-assert(game.deckManager.hand.some(c => c.id === 'water_conservancy'), 'Test A: 手牌包含【兴修水利】');
-assert(game.deckManager.hand.some(c => c.id === 'conscript_labor'), 'Test A: 手牌包含【征发民夫】');
+assert(spectatorMetrics.totalTurns >= 20, `连续纯旁观完成 20 季 (实际: ${spectatorMetrics.totalTurns} 季)`);
+assert(spectatorMetrics.nonActionCount >= 20, '玩家连续 20 季度完全不操作无为退朝');
+assert(parseFloat(spectatorMetrics.storyContinuityRate) > 0, `故事连续率大于 0 (实际: ${spectatorMetrics.storyContinuityRate})`);
+assert(parseFloat(spectatorMetrics.characterRecurrenceRate) > 0, `人物复现率大于 0 (实际: ${spectatorMetrics.characterRecurrenceRate})`);
+assert(parseFloat(spectatorMetrics.isolatedRandomEventRatio) < 20, `孤立随机事件率受控在 20% 以下 (实际: ${spectatorMetrics.isolatedRandomEventRatio})`);
 
-// 验证3种不同解法产出不同后遗状态
-const evalRelief = InteractionResolver.analyzeCardOptions(CARDS.find(c => c.id === 'granary_relief'), game.stateManager, game.situationManager.getActive());
-const evalWater = InteractionResolver.analyzeCardOptions(CARDS.find(c => c.id === 'water_conservancy'), game.stateManager, game.situationManager.getActive());
-const evalLabor = InteractionResolver.analyzeCardOptions(CARDS.find(c => c.id === 'conscript_labor'), game.stateManager, game.situationManager.getActive());
-assert(evalRelief.matches[0].evalResult.newResidue === 'empty_granaries', '开仓赈济代价为【仓储空虚】');
-assert(evalWater.matches[0].evalResult.newResidue === 'solid_dykes', '兴修水利产出为【河防稳固】');
-assert(evalLabor.matches[0].evalResult.newResidue === 'heavy_labor', '征发民夫代价为【徭役沉重】');
+// ---------------- 测试 5: Test B - 提拔名臣沈恪 (Section 72 Test B) ----------------
+console.log('\n--- 测试 5: Test B - 提拔名臣沈恪 ---');
+const testBMetrics = game.setupScenarioTestB();
+const shenKe = game.world.characterManager.get('shen_ke');
+assert(game.world.causalHookManager.has('shen_ke_reform_enacted'), '成功种植沈恪清丈因果 Hook');
+assert(game.world.causalHookManager.has('appoint_shen_ke_tutor'), '成功种植沈恪帝师因果 Hook');
+const heir = game.world.royalFamilyManager.getHeir();
+assert(heir && heir.tutor === '沈恪', '皇太子讲官确立为沈恪');
+assert(shenKe.history.length >= 3, '沈恪生平记载丰富真实');
 
-// Test B: 北境危机
-game.setupScenarioTestB();
-assert(game.situationManager.getActive()[0].id === 'northern_incursion' && game.situationManager.getActive()[0].stage === 3, 'Test B: 北境犯边处于第 3 阶 (危急)');
-assert(game.deckManager.hand.some(c => c.id === 'dispatch_troops_north'), 'Test B: 包含武力牌');
-assert(game.deckManager.hand.some(c => c.id === 'peace_marriage'), 'Test B: 包含外交牌');
-assert(game.deckManager.hand.some(c => c.id === 'open_border_market'), 'Test B: 包含贸易牌');
+// ---------------- 测试 6: Test C - 养大将韩策 (Section 72 Test C) ----------------
+console.log('\n--- 测试 6: Test C - 养大将韩策 ---');
+const testCMetrics = game.setupScenarioTestC();
+const hanCe = game.world.characterManager.get('han_ce');
+assert(game.world.causalHookManager.has('han_ce_reinforced'), '韩策获得大扩军支持');
+assert(game.world.causalHookManager.has('summon_han_ce_capital'), '成功诏韩策还京入阁参政');
+assert(hanCe.office.includes('枢密') || hanCe.office.includes('太保') || hanCe.office.includes('定远侯'), `韩策官职发生明显迁转: ${hanCe.office}`);
 
-// Test C: 双重危机
-game.setupScenarioTestC();
-assert(game.situationManager.getActive().length === 2, 'Test C: 场上同时存在水患与北境犯边');
+// ---------------- 测试 7: Test D - 完全昏君治世 (Section 72 Test D) ----------------
+console.log('\n--- 测试 7: Test D - 完全昏君治世 ---');
+const testDMetrics = game.setupScenarioTestD();
+assert(game.world.causalHookManager.has('palace_construction_started'), '大修西苑神仙殿宇因果生效');
+assert(game.world.causalHookManager.has('emperor_alchemy_fused'), '炼九转金丹因果生效');
+assert(game.world.causalHookManager.has('emperor_southern_tour'), '御驾南巡因果生效');
+const entriesD = game.world.historyManager.getAllEntries();
+const hasHedonistEntry = entriesD.some(e => e.text.includes('西苑') || e.text.includes('金丹') || e.text.includes('南巡'));
+assert(hasHedonistEntry, '史册起居注自然形成极具荒诞与文治趣味的帝王本纪记录');
 
-// Test D: 盛世
-game.setupScenarioTestD();
-assert(game.situationManager.getActive().some(s => s.category === 'opportunity'), 'Test D: 场上存在绿色机会局势');
+// ---------------- 测试 8: Test E - 储君 15 年成长推演 (Section 72 Test E) ----------------
+console.log('\n--- 测试 8: Test E - 储君 15 年成长推演 ---');
+const testEMetrics = game.setupScenarioTestE();
+const heirE = game.world.royalFamilyManager.getHeir();
+assert(heirE.age >= 18, `储君经历 15 年后顺利弱冠成年 (实际: ${heirE.age} 岁)`);
+assert(heirE.history.length >= 2, `储君拥有完整的开蒙受业与生平记录 (${heirE.history.length} 条)`);
 
-// ---------------- 测试 5: 年度定策 (Section 18) ----------------
-console.log('\n--- 测试 5: 年度定策机制 ---');
-game.startNewGame('policy_test');
-game.turn = 4;
-game.selectCard(game.deckManager.hand[0].id);
-game.playSelectedCard();
-game.adjournCourt(); // 第4季末
-assert(game.phase === 'ANNUAL_POLICY', '第 4 季末正确切入 ANNUAL_POLICY 阶段等待定策');
-const draft = game.policyManager.pendingOptions;
-assert(draft && draft.length === 3, '成功生成 3 选 1 国策候选');
+// ---------------- 测试 9: Test F - 皇帝驾崩与大统继位 (Section 72 Test F) ----------------
+console.log('\n--- 测试 9: Test F - 皇帝驾崩与大统继位 ---');
+const testFMetrics = game.setupScenarioTestF();
+assert(game.world.successionManager.pastEmperors.length >= 1, '成功生成先帝《本纪》史评');
+const annals = game.world.successionManager.pastEmperors[0];
+assert(annals.posthumousTitle !== '', `先帝获赐尊谥: 【${annals.posthumousTitle}】`);
+assert(game.world.royalFamilyManager.emperor.generation === 2, '新君成功登基即位，进入第二代帝皇传序');
+// 核心：继位不重置世界 (Section 10)
+assert(game.world.characterManager.getActive().length >= 5, '先帝朝中重臣、故旧依然健在活跃');
+assert(game.world.threadManager.getActiveThreads().length >= 1, '前朝的故事线程未被清空，自然在跨代演进');
 
-// 选定其中一个国策
-const pickedPolicy = draft[0];
-game.applyAnnualPolicySelection(pickedPolicy.id);
-assert(game.policyManager.hasPolicy(pickedPolicy.id), `成功确立国策【${pickedPolicy.title}】`);
-assert(game.turn === 5, '定策后正常推进至第 5 季');
-assert(game.phase === 'PLAY_CARD', '阶段切回 PLAY_CARD');
+// ---------------- 测试 10: 100 季连续全量世界自动化演化测试 ----------------
+console.log('\n--- 测试 10: 100 季连续全量世界自动化演化测试 ---');
+const longGame = new GameState('seed_long_100_run');
+longGame.startNewGame('seed_long_100_run');
 
-// ---------------- 测试 6: 完整 40 轮连续真实对局 (AI启发式游玩) ----------------
-console.log('\n--- 测试 6: 完整 40 轮连续推演与 Telemetry 0.2 验证 ---');
-const simGame = new GameState('sim_game_v02');
-simGame.startNewGame('sim_game_v02');
-simGame.godMode = true; // 跑满40轮
-
-let turnCounter = 0;
-while (!simGame.isGameOver && simGame.turn <= 40 && turnCounter < 50) {
-  turnCounter++;
-
-  // 挑选最佳对局牌
-  const hand = simGame.deckManager.hand;
-  let bestCard = hand[0];
-  let bestTarget = null;
-  let bestQ = 'none';
-
-  for (const c of hand) {
-    const analysis = InteractionResolver.analyzeCardOptions(
-      c,
-      simGame.stateManager,
-      simGame.situationManager.getActive(),
-      simGame.policyManager,
-      simGame.residueManager
-    );
-    if (analysis.bestQuality === 'excellent') {
-      bestCard = c;
-      bestTarget = analysis.autoTarget ? analysis.autoTarget.id : (analysis.validTargets[0] ? analysis.validTargets[0].id : null);
-      bestQ = 'excellent';
-      break;
-    } else if (analysis.bestQuality === 'good' && bestQ !== 'excellent') {
-      bestCard = c;
-      bestTarget = analysis.autoTarget ? analysis.autoTarget.id : (analysis.validTargets[0] ? analysis.validTargets[0].id : null);
-      bestQ = 'good';
-    }
+let turnsSurvived = 0;
+while (longGame.world.turn < 100) {
+  if (longGame.world.isSuccessionPending) {
+    longGame.continueSuccession();
   }
-
-  simGame.selectCard(bestCard.id);
-  if (bestTarget) simGame.selectedSituationId = bestTarget;
-  simGame.playSelectedCard();
-
-  // 偶尔保留一张牌
-  if (simGame.deckManager.hand.length > 0 && Math.random() < 0.3) {
-    simGame.toggleKeepCard(simGame.deckManager.hand[0].id);
+  // 模拟真实玩家行为：偶尔批一份奏折，偶尔退朝无为
+  if (Math.random() < 0.4 && longGame.world.proposalManager.currentProposals.length > 0) {
+    const prop = longGame.world.proposalManager.currentProposals[0];
+    longGame.selectProposal(prop.id);
+    longGame.enactSelectedProposal();
+  } else {
+    longGame.adjournCourt();
   }
-
-  simGame.adjournCourt();
-
-  // 若遇到年度定策自动选第一个
-  if (simGame.phase === 'ANNUAL_POLICY') {
-    const opts = simGame.policyManager.pendingOptions || simGame.policyManager.generateDraftOptions();
-    simGame.applyAnnualPolicySelection(opts[0].id);
-  }
+  turnsSurvived++;
 }
 
-assert(simGame.turn >= 40, `成功连续推演满 40 季 (实际: ${simGame.turn} 季)`);
-assert(simGame.isGameOver === true && simGame.gameOutcome === 'victory', '40 季后判定江山暂安 (victory)');
+assert(turnsSurvived >= 99, `成功连续演化满 100 季 (实际: ${longGame.world.turn} 季，跨越 ${Math.floor(longGame.world.turn/4)} 年)`);
+const longMetrics = longGame.telemetryManager.calculateMetrics(longGame.world);
+console.log('100 季全量演化指标:', longMetrics);
+assert(longMetrics.totalEventsSimulated > 80, `总演变事件丰富达标 (总计: ${longMetrics.totalEventsSimulated} 个)`);
+assert(parseFloat(longMetrics.storyContinuityRate) > 15, `长线故事连续率保持稳健 (${longMetrics.storyContinuityRate})`);
 
-// ---------------- 测试 7: Telemetry 0.2 导出与统计字段验证 ----------------
-console.log('\n--- 测试 7: Telemetry 0.2 数据结构验证 ---');
-const report = simGame.telemetryManager.generateFullReport(
-  simGame.deckManager,
-  simGame.situationManager,
-  simGame.stateManager,
-  simGame.residueManager,
-  simGame.policyManager
-);
-
-assert(report.summary.meaningfulChoiceStats !== undefined, 'Telemetry 包含 Meaningful Choice 统计');
-assert(report.summary.totalNeglectEscalations !== undefined, 'Telemetry 包含放任恶化次数统计');
-assert(report.turns_log.length >= 40, '每季明细日志完整');
-const firstLog = report.turns_log[0];
-assert(Array.isArray(firstLog.hand_before_play) && firstLog.hand_before_play.length === 5, '首季 hand_before_play 完整记录 5 张牌');
-assert(firstLog.interaction_quality !== undefined, '包含 interaction_quality 评级');
-assert(firstLog.meaningful_choices !== undefined, '包含 meaningful_choices 选项统计');
-
-// ---------------- 测试 8: 存档与 loadFromSave 恢复完整性验证 ----------------
-console.log('\n--- 测试 8: 存档与 loadFromSave 恢复完整性验证 ---');
-const saveGame = new GameState('save_test_seed');
-saveGame.startNewGame('save_test_seed', '泰安');
-saveGame.selectCard(saveGame.deckManager.hand[0].id);
-saveGame.playSelectedCard();
+// ---------------- 测试 11: 存档与 loadFromSave 完整性恢复 ----------------
+console.log('\n--- 测试 11: 存档与 loadFromSave 完整性恢复 ---');
+const saveGame = new GameState('save_test_03');
+saveGame.startNewGame('save_test_03');
+saveGame.adjournCourt();
 saveGame.adjournCourt();
 
-// 此时 saveGame 已进入 turn 2
-assert(saveGame.turn === 2, '当前处于第 2 季');
-const statsBeforeSave = saveGame.stateManager.getStats();
-const handBeforeSave = [...saveGame.deckManager.hand.map(c => c.id)];
+const turnBefore = saveGame.world.turn;
+const charCountBefore = saveGame.world.characterManager.characters.length;
+const threadsBefore = saveGame.world.threadManager.activeThreads.length;
 
-// 创建全新实例并从存档恢复
+// 创建全新实例从存档恢复
 const restoredGame = new GameState();
-const loadSuccess = restoredGame.loadFromSave();
-assert(loadSuccess === true, 'loadFromSave() 成功返回 true');
-assert(restoredGame.turn === 2, '成功恢复回合数 (turn === 2)');
-assert(restoredGame.historyManager.eraName === '泰安', '成功恢复年号【泰安】');
-assert(restoredGame.stateManager.treasury === statsBeforeSave.treasury, '成功恢复国库健康度');
-assert(restoredGame.stateManager.morale === statsBeforeSave.morale, '成功恢复民心健康度');
-assert(restoredGame.stateManager.military === statsBeforeSave.military, '成功恢复军势健康度');
-assert(restoredGame.stateManager.court === statsBeforeSave.court, '成功恢复朝局健康度');
-assert(restoredGame.deckManager.hand.length === 5, '成功恢复 5 张手牌');
-assert(restoredGame.deckManager.hand.map(c => c.id).join(',') === handBeforeSave.join(','), '手牌内容与顺序完全一致');
-assert(restoredGame.historyManager.getAllEntries().length === saveGame.historyManager.getAllEntries().length, '历史记录条数完整恢复');
-assert(restoredGame.telemetryManager.turnLogs.length === saveGame.telemetryManager.turnLogs.length, '遥测日志完整恢复');
+const loadOk = restoredGame.loadFromSave();
 
-console.log(`\n🎉 全部 Prototype 0.2 核心自动化测试通过：${passedTests}/${totalTests} PASS！`);
+assert(loadOk === true, 'loadFromSave() 恢复成功返回 true');
+assert(restoredGame.world.turn === turnBefore, `成功恢复当前季度 (turn === ${turnBefore})`);
+assert(restoredGame.world.characterManager.characters.length === charCountBefore, '成功恢复完整人物生态池');
+assert(restoredGame.world.threadManager.activeThreads.length === threadsBefore, '成功恢复完整故事线程');
+
+console.log(`\n🎉 全部 Prototype 0.3 核心自动化验证通过：${passedTests}/${totalTests} PASS！`);

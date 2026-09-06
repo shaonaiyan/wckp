@@ -1,187 +1,169 @@
-// Prototype 0.2 遥测数据与深度统计管理器 (TelemetryManager)
-// 记录精确的出牌前手牌、自动索敌、交互评级、后遗状态、Meaningful Choice 分析与因果链
+// 《一朝天子》Prototype 0.3 遥测与生命力统计管理器 (TelemetryManager)
+// 记录世界生命力、人物复现率、故事连续率、孤立事件率、因果反馈与旁观统计 (Section 67~71)
+
+export const TELEMETRY_STORAGE_KEY = 'yichao_tianzi_v03_telemetry';
 
 export class TelemetryManager {
   constructor() {
     this.turnLogs = [];
-    this.gameMetadata = {
-      gameId: null,
-      seed: null,
-      eraName: null,
-      startedAt: null,
-      endedAt: null,
-      finalOutcome: null,
-      defeatReason: null,
-      totalTurns: 0,
-      peakTurn: 1,
-      peakStatsTotal: 0,
-      mostSevereCrisis: null
-    };
-
-    // 总体指标追踪
-    this.qualityCounts = {
-      excellent: 0,
-      good: 0,
-      weak: 0,
-      none: 0,
-      dangerous: 0
-    };
-    this.totalNeglectEscalations = 0;
+    this.playerActions = [];
+    this.characterAppearances = {}; // { [charName]: [turns] }
+    this.spectatorRuns = [];
   }
 
-  reset(seed, eraName) {
+  reset() {
     this.turnLogs = [];
-    this.qualityCounts = {
-      excellent: 0,
-      good: 0,
-      weak: 0,
-      none: 0,
-      dangerous: 0
-    };
-    this.totalNeglectEscalations = 0;
-    this.gameMetadata = {
-      gameId: 'dynasty_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-      seed,
-      eraName,
-      startedAt: new Date().toISOString(),
-      endedAt: null,
-      finalOutcome: null,
-      defeatReason: null,
-      totalTurns: 0,
-      peakTurn: 1,
-      peakStatsTotal: 0,
-      mostSevereCrisis: null
-    };
+    this.playerActions = [];
+    this.characterAppearances = {};
   }
 
-  // 记录本轮数据快照 (严格执行 0.2 格式)
   logTurn(turnData) {
     this.turnLogs.push(turnData);
 
-    if (turnData.interaction_quality && this.qualityCounts[turnData.interaction_quality] !== undefined) {
-      this.qualityCounts[turnData.interaction_quality]++;
+    // 统计人物出镜
+    if (Array.isArray(turnData.headlines)) {
+      turnData.headlines.forEach(h => {
+        if (h.character) {
+          const cname = h.character.name;
+          if (!this.characterAppearances[cname]) this.characterAppearances[cname] = [];
+          this.characterAppearances[cname].push(turnData.turn);
+        }
+      });
     }
 
-    // 追踪繁荣峰值
-    const statsTotal = (turnData.stats_after.treasury || 0) + (turnData.stats_after.morale || 0) +
-      (turnData.stats_after.military || 0) + (turnData.stats_after.court || 0);
-    if (statsTotal > this.gameMetadata.peakStatsTotal) {
-      this.gameMetadata.peakStatsTotal = statsTotal;
-      this.gameMetadata.peakTurn = turnData.turn;
+    if (turnData.playerAction) {
+      this.playerActions.push(turnData.playerAction);
     }
-
-    // 追踪最高危机
-    for (const s of turnData.situation_after) {
-      if (!this.gameMetadata.mostSevereCrisis || (s.stage && s.stage > this.gameMetadata.mostSevereCrisis.stage)) {
-        this.gameMetadata.mostSevereCrisis = {
-          id: s.id,
-          name: s.name,
-          stage: s.stage,
-          turn: turnData.turn
-        };
-      }
-    }
-
-    this.gameMetadata.totalTurns = turnData.turn;
   }
 
-  recordNeglectEscalation() {
-    this.totalNeglectEscalations++;
-  }
-
-  finalizeGame(outcome, reason) {
-    this.gameMetadata.endedAt = new Date().toISOString();
-    this.gameMetadata.finalOutcome = outcome;
-    this.gameMetadata.defeatReason = reason || (outcome === 'victory' ? '历经四十季风雨，四海暂安' : '社稷倾覆');
-  }
-
-  // 聚合生成完整 0.2 统计分析报告
-  generateFullReport(deckManager, situationManager, stateManager, residueManager, policyManager) {
-    // 1. 卡牌统计
-    const cardSummary = {};
-    for (const [cardId, stat] of Object.entries(deckManager.cardStats)) {
-      const usageRate = stat.drawn > 0 ? ((stat.played / stat.drawn) * 100).toFixed(1) + '%' : '0%';
-      cardSummary[cardId] = {
-        drawn: stat.drawn,
-        played: stat.played,
-        held: stat.held,
-        usage_rate: usageRate
+  // 综合计算 0.3 核心指标 (Section 67)
+  calculateMetrics(world) {
+    const totalTurns = this.turnLogs.length;
+    if (totalTurns === 0) {
+      return {
+        totalTurns: 0,
+        characterRecurrenceRate: '0%',
+        storyContinuityRate: '0%',
+        isolatedRandomEventRatio: '0%',
+        avgCharacterReturnInterval: '0 季',
+        totalEventsSimulated: 0,
+        headlinesShownCount: 0,
+        playerActionCount: 0,
+        nonActionCount: 0,
+        causalHooksPlanted: 0,
+        causalHooksTriggered: 0
       };
     }
 
-    // 2. 局势统计
-    const situationSummary = {};
-    for (const [sitId, stat] of Object.entries(situationManager.situationHistory)) {
-      const avgDuration = stat.spawnCount > 0 ? (stat.turnsActive / stat.spawnCount).toFixed(1) : 0;
-      situationSummary[sitId] = {
-        spawnCount: stat.spawnCount,
-        resolvedCount: stat.resolvedCount,
-        neglectedEscalations: stat.neglectedEscalations,
-        avgTurnsActive: Number(avgDuration)
-      };
-    }
+    let headlinesTotal = 0;
+    let threadHeadlines = 0;
+    let characterHeadlines = 0;
+    let isolatedHeadlines = 0;
 
-    // 3. Meaningful Choice 统计汇总
-    let totalTurnsWithChoices = 0;
-    let sumMultiValidTurns = 0;
-    for (const t of this.turnLogs) {
-      if (t.meaningful_choices) {
-        totalTurnsWithChoices++;
-        const validOptions = (t.meaningful_choices.excellentChoiceCount || 0) + (t.meaningful_choices.goodChoiceCount || 0);
-        if (validOptions >= 2) sumMultiValidTurns++;
+    this.turnLogs.forEach(t => {
+      if (Array.isArray(t.headlines)) {
+        t.headlines.forEach(h => {
+          headlinesTotal++;
+          if (h.type === 'thread_progression' || h.threadId) {
+            threadHeadlines++;
+          }
+          if (h.character || h.type === 'character_action' || h.type === 'character_death') {
+            characterHeadlines++;
+          }
+          if (h.type === 'independent_random') {
+            isolatedHeadlines++;
+          }
+        });
       }
-    }
-    const multiValidChoiceRatio = totalTurnsWithChoices > 0
-      ? ((sumMultiValidTurns / totalTurnsWithChoices) * 100).toFixed(1) + '%'
-      : '0%';
+    });
+
+    const continuityRate = headlinesTotal > 0 ? ((threadHeadlines / headlinesTotal) * 100).toFixed(1) + '%' : '0%';
+    const recurrenceRate = headlinesTotal > 0 ? ((characterHeadlines / headlinesTotal) * 100).toFixed(1) + '%' : '0%';
+    const isolatedRatio = headlinesTotal > 0 ? ((isolatedHeadlines / headlinesTotal) * 100).toFixed(1) + '%' : '0%';
+
+    // 计算人物平均复现间隔
+    let intervals = [];
+    Object.values(this.characterAppearances).forEach(turns => {
+      if (turns.length >= 2) {
+        for (let i = 1; i < turns.length; i++) {
+          intervals.push(turns[i] - turns[i - 1]);
+        }
+      }
+    });
+    const avgInterval = intervals.length > 0
+      ? (intervals.reduce((a, b) => a + b, 0) / intervals.length).toFixed(1) + ' 季'
+      : '首次登场';
+
+    const nonActionTurns = this.turnLogs.filter(t => !t.playerAction).length;
+    const hooksPlanted = world ? world.causalHookManager.getAll().length : 0;
+    const hooksTriggered = world ? world.causalHookManager.getAll().reduce((sum, h) => sum + (h.triggeredEventsCount || 0), 0) : 0;
 
     return {
-      metadata: this.gameMetadata,
-      summary: {
-        totalTurnsSurviving: this.gameMetadata.totalTurns,
-        outcome: this.gameMetadata.finalOutcome,
-        defeatReason: this.gameMetadata.defeatReason,
-        peakProsperity: {
-          turn: this.gameMetadata.peakTurn,
-          statsTotal: this.gameMetadata.peakStatsTotal
-        },
-        mostSevereCrisis: this.gameMetadata.mostSevereCrisis,
-        totalNeglectEscalations: this.totalNeglectEscalations,
-        meaningfulChoiceStats: {
-          totalTurnsEvaluated: totalTurnsWithChoices,
-          turnsWithAtLeast2GoodOptions: sumMultiValidTurns,
-          multiValidChoiceRatio // 有压力时手牌至少有2种好解法的回合占比
-        },
-        interactionQualityDistribution: this.qualityCounts,
-        activeResiduesAtEnd: residueManager ? residueManager.getActive().map(r => r.name) : [],
-        activePoliciesAtEnd: policyManager ? policyManager.getActive().map(p => p.name) : []
-      },
-      cards_statistics: cardSummary,
-      situations_statistics: situationSummary,
-      turns_log: this.turnLogs
+      totalTurns,
+      totalEventsSimulated: this.turnLogs.reduce((sum, t) => sum + (t.allEventsCount || 0), 0),
+      headlinesShownCount: headlinesTotal,
+      storyContinuityRate: continuityRate,
+      characterRecurrenceRate: recurrenceRate,
+      isolatedRandomEventRatio: isolatedRatio,
+      avgCharacterReturnInterval: avgInterval,
+      playerActionCount: this.playerActions.length,
+      nonActionCount: nonActionTurns,
+      causalHooksPlanted: hooksPlanted,
+      causalHooksTriggered: hooksTriggered
     };
   }
 
-  exportJSON(deckManager, situationManager, stateManager, residueManager, policyManager) {
-    const report = this.generateFullReport(deckManager, situationManager, stateManager, residueManager, policyManager);
+  // 导出完整本局 0.3 遥测数据 JSON (Section 71)
+  exportFullJSON(world) {
+    const metrics = this.calculateMetrics(world);
+    const report = {
+      version: '0.3',
+      exportedAt: new Date().toISOString(),
+      seed: world.initialSeed,
+      metrics,
+      emperors: world.successionManager.pastEmperors,
+      currentEmperor: world.royalFamilyManager.emperor,
+      royalFamily: {
+        empress: world.royalFamilyManager.empress,
+        children: world.royalFamilyManager.children,
+        heirId: world.royalFamilyManager.heirId
+      },
+      characters: world.characterManager.characters.map(c => ({
+        name: c.name,
+        office: c.office,
+        age: c.age,
+        alive: c.alive,
+        traits: c.traits,
+        influence: c.influence,
+        history: c.history
+      })),
+      factions: world.factions,
+      regions: world.regions,
+      threads: world.threadManager.activeThreads,
+      causalHooks: world.causalHookManager.getAll(),
+      memories: world.memoryManager.getAll(),
+      chronicle: world.historyManager.getAllEntries(),
+      turnsLog: this.turnLogs
+    };
+
     return JSON.stringify(report, null, 2);
   }
 
-  downloadJSON(deckManager, situationManager, stateManager, residueManager, policyManager) {
-    const jsonStr = this.exportJSON(deckManager, situationManager, stateManager, residueManager, policyManager);
+  downloadJSON(world) {
+    const jsonStr = this.exportFullJSON(world);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `yichao_tianzi_v02_telemetry_${this.gameMetadata.seed || Date.now()}.json`;
+    a.download = `yichao_tianzi_v03_telemetry_${world.initialSeed}_turn${world.turn}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
 
-  async copyJSON(deckManager, situationManager, stateManager, residueManager, policyManager) {
-    const jsonStr = this.exportJSON(deckManager, situationManager, stateManager, residueManager, policyManager);
+  async copyJSON(world) {
+    const jsonStr = this.exportFullJSON(world);
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(jsonStr);
       return true;
