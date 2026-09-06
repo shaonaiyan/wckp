@@ -1,10 +1,11 @@
-// 存档管理器：负责 LocalStorage 自动存储与读档恢复
-const SAVE_KEY = 'yichao_tianzi_save_v1';
+// Prototype 0.2 存档管理器 (SaveManager)
+const SAVE_KEY = 'yichao_tianzi_save_v02';
 
 export class SaveManager {
   static save(gameState) {
     try {
       const data = {
+        version: '0.2',
         seed: gameState.randomManager.initialSeed,
         turn: gameState.turn,
         eraName: gameState.historyManager.eraName,
@@ -12,36 +13,33 @@ export class SaveManager {
         gameOutcome: gameState.gameOutcome,
         defeatReason: gameState.defeatReason,
         godMode: gameState.godMode,
-        phase: gameState.phase, // 'PLAY_CARD' | 'POST_PLAY' | 'ENDED'
+        phase: gameState.phase,
 
-        // 状态
+        // 宏观健康度
         stats: gameState.stateManager.getStats(),
-        longTermStates: gameState.stateManager.longTermStates,
-        actionHistory: gameState.stateManager.actionHistory,
-        categoryCounts: gameState.stateManager.categoryCounts,
-        recentStreaks: gameState.stateManager.recentStreaks,
-        debtCount: gameState.stateManager.debtCount,
-        rewardCount: gameState.stateManager.rewardCount,
-        lowMoraleTurns: gameState.stateManager.lowMoraleTurns,
-        highCourtTurns: gameState.stateManager.highCourtTurns,
+
+        // 真实牌库
+        drawPile: gameState.deckManager.drawPile,
+        discardPile: gameState.deckManager.discardPile,
+        hand: gameState.deckManager.hand,
+        keptCard: gameState.deckManager.keptCard,
+        cardStats: gameState.deckManager.cardStats,
 
         // 局势
         activeSituations: gameState.situationManager.activeSituations,
         deferredQueue: gameState.situationManager.deferredQueue,
         situationHistory: gameState.situationManager.situationHistory,
 
-        // 卡牌
-        hand: gameState.cardManager.hand,
-        keptCard: gameState.cardManager.keptCard,
-        pendingCard: gameState.cardManager.pendingCard,
-        cardStats: gameState.cardManager.cardStats,
+        // 后遗状态与年度国策
+        activeResidues: gameState.residueManager.activeResidues,
+        activePolicies: gameState.policyManager.activePolicies,
 
-        // 史册
+        // 史册与遥测
         historyEntries: gameState.historyManager.entries,
-
-        // 遥测
         turnLogs: gameState.telemetryManager.turnLogs,
         gameMetadata: gameState.telemetryManager.gameMetadata,
+        qualityCounts: gameState.telemetryManager.qualityCounts,
+        totalNeglectEscalations: gameState.telemetryManager.totalNeglectEscalations,
 
         savedAt: Date.now()
       };

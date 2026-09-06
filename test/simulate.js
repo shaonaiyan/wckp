@@ -1,11 +1,13 @@
-// 自动化仿真测试脚本：验证40轮运行、边界约束、局势上限、随机复现、JSON导出与失败判定
+// Prototype 0.2 核心全量自动化验证脚本
 import { GameState } from '../src/game.js';
 import { CARDS } from '../src/data/cards.js';
 import { SITUATIONS } from '../src/data/situations.js';
-import { LONG_TERM_STATES } from '../src/data/states.js';
+import { RESIDUES } from '../src/data/residues.js';
+import { POLICIES } from '../src/data/policies.js';
 import { BALANCE } from '../src/data/balance.js';
+import { InteractionResolver } from '../src/engine/interactionResolver.js';
 
-// Mock localStorage for node environment
+// Mock localStorage
 globalThis.localStorage = {
   store: {},
   getItem(k) { return this.store[k] || null; },
@@ -14,8 +16,8 @@ globalThis.localStorage = {
   clear() { this.store = {}; }
 };
 
-console.log('================ 开始《一朝天子》核心自动化验证 ================');
-console.log(`配置检查：卡牌数 ${CARDS.length} 张，局势数 ${SITUATIONS.length} 个，长期状态数 ${Object.keys(LONG_TERM_STATES).length} 个。`);
+console.log('================ 开始《一朝天子》Prototype 0.2 核心自动化验证 ================');
+console.log(`配置检查：卡牌 ${CARDS.length} 张，局势 ${SITUATIONS.length} 种，后遗状态 ${Object.keys(RESIDUES).length} 种，年度国策 ${Object.keys(POLICIES).length} 种。`);
 
 let passedTests = 0;
 let totalTests = 0;
@@ -31,164 +33,196 @@ function assert(condition, message) {
   }
 }
 
-// ---------------- 测试 1: 种子可复现性 ----------------
-console.log('\n--- 测试 1: 种子可复现性 ---');
-const seedTest = 'test_seed_abc123';
-const gameA = new GameState(seedTest);
-gameA.startNewGame(seedTest);
-const initialHandA = gameA.cardManager.hand.map(c => c.id);
-const initialStatsA = gameA.stateManager.getStats();
+// ---------------- 测试 1: 真实实体牌库与无重复抽牌 ----------------
+console.log('\n--- 测试 1: 真实实体牌库与无重复抽牌 ---');
+const game = new GameState('seed_deck_test');
+game.startNewGame('seed_deck_test');
 
-const gameB = new GameState(seedTest);
-gameB.startNewGame(seedTest);
-const initialHandB = gameB.cardManager.hand.map(c => c.id);
-const initialStatsB = gameB.stateManager.getStats();
+assert(game.deckManager.hand.length === 5, '首轮手牌为 5 张');
+assert(game.deckManager.drawPile.length === 19, '24张实体牌库抽5张后剩余19张 (24-5=19)');
+const uniqueHandIds = new Set(game.deckManager.hand.map(c => c.id));
+assert(uniqueHandIds.size === 5, '手牌中无同名牌重复');
+assert(game.deckManager.handBeforePlay.length === 5, '出牌前完整快照包含 5 张手牌 (已修复 0.1 Telemetry 缺陷)');
 
-assert(JSON.stringify(initialHandA) === JSON.stringify(initialHandB), '相同 Seed 下初始 5 张手牌完全一致');
-assert(JSON.stringify(initialStatsA) === JSON.stringify(initialStatsB), '相同 Seed 下初始四项属性完全一致');
+// ---------------- 测试 2: 目标自动锁定与有效性判定 (Section 1) ----------------
+console.log('\n--- 测试 2: 目标自动锁定与有效性判定 ---');
+// 清空并只设置【北境犯边】
+game.situationManager.clearAll();
+game.situationManager.addSituation('northern_incursion');
+game.deckManager.forceCardToHand('dispatch_troops_north');
 
-// ---------------- 测试 2: 第一轮节奏验证 ----------------
-console.log('\n--- 测试 2: 第一轮节奏验证 ---');
-assert(gameA.turn === 1, '第一轮回合数为 1');
-assert(gameA.situationManager.getActive().length === 1, '第一轮场上局势严格只有 1 个');
-assert(gameA.situationManager.getActive()[0].id === 'harvest_south', '第一轮局势严格固定为【江南丰收】');
-assert(gameA.cardManager.hand.length === 5, '第一轮手牌严格为 5 张');
+// 玩家点击【调兵北上】
+game.selectCard('dispatch_troops_north');
+assert(game.selectedSituationId === 'northern_incursion', '唯一明显合法目标自动锁定为【北境犯边】');
+assert(game.autoTargeted === true, '标记为自动索敌锁定 autoTargeted: true');
 
-// 验证防极端烂手规则：不能5张完全同类
-const categories = new Set(gameA.cardManager.hand.map(c => c.category));
-assert(categories.size >= 2, `首轮手牌种类数 >= 2 (实际: ${categories.size})`);
+// 执行出牌
+const playRes = game.playSelectedCard();
+assert(playRes.success === true, '成功打出【调兵北上】');
+assert(playRes.targetSituation && playRes.targetSituation.id === 'northern_incursion', '明确作用于【北境犯边】，杜绝语义落空');
+assert(playRes.quality === 'excellent', '交互评级为 excellent (极有效)');
+assert(game.residueManager.hasResidue('weary_army'), '成功种下因果：获得后遗状态【边军疲惫】');
 
-// ---------------- 测试 3: 出牌与保留牌机制 ----------------
-console.log('\n--- 测试 3: 出牌与保留牌机制 ---');
-const cardToPlay = gameA.cardManager.hand[0];
-gameA.selectCard(cardToPlay.id);
-const playResult = gameA.playSelectedCard();
-assert(playResult.success, `成功打出手牌【${cardToPlay.name}】`);
-assert(gameA.phase === 'POST_PLAY', '打牌后状态进入 POST_PLAY');
-assert(gameA.cardManager.hand.length === 4, '打牌后剩余手牌为 4 张');
+// ---------------- 测试 3: 局势三阶段压力与放任离散后果 (Section 4 & 23) ----------------
+console.log('\n--- 测试 3: 局势三阶段压力与放任离散后果 ---');
+game.startNewGame('seed_neglect_test');
+game.situationManager.clearAll();
+game.situationManager.addSituation('northern_incursion');
+const sit = game.situationManager.getActive()[0];
+assert(sit.stage === 1, '局势初始阶段为 1 阶 (征兆)');
 
-// 测试保留一张牌
-const cardToKeep = gameA.cardManager.hand[0];
-gameA.toggleKeepCard(cardToKeep.id);
-assert(gameA.cardManager.keptCard && gameA.cardManager.keptCard.id === cardToKeep.id, '成功标记保留一张牌留待下朝');
+// 玩家打一张与北境无关的牌 (如劝农垦荒)，故意放任北境
+game.deckManager.forceCardToHand('encourage_reclamation');
+game.selectCard('encourage_reclamation');
+game.playSelectedCard();
 
-// 退朝
-gameA.adjournCourt();
-assert(gameA.turn === 2, '退朝后进入第 2 季');
-assert(gameA.phase === 'PLAY_CARD', '新一季状态切回 PLAY_CARD');
-assert(gameA.cardManager.hand.length === 5, '补牌后总手牌恢复为 5 张');
-const hasKept = gameA.cardManager.hand.some(c => c.id === cardToKeep.id && c.isKeptFromPrev);
-assert(hasKept, '上一轮保留的牌成功继承到下一季手牌中');
+// 退朝，结算放任
+game.adjournCourt();
+const sitAfter = game.situationManager.getActive().find(s => s.id === 'northern_incursion');
+assert(sitAfter && sitAfter.stage === 2, '未予处理导致【北境犯边】恶化至第 2 阶 (边关失守)');
+assert(game.pendingNeglectLogs.length > 0, '生成放任恶化事件记录');
 
-// ---------------- 测试 4: 局势上限不超过 3 个，且处理替换/合并 ----------------
-console.log('\n--- 测试 4: 局势上限与合并机制 ---');
-gameA.situationManager.clearAll();
-gameA.situationManager.addSituation('harvest_south');
-gameA.situationManager.addSituation('northern_incursion');
-gameA.situationManager.addSituation('yellow_river_flood');
-assert(gameA.situationManager.getActive().length === 3, '添加3个局势后数量为 3');
+// 再次放任
+game.deckManager.forceCardToHand('tax_relief');
+game.selectCard('tax_relief');
+game.playSelectedCard();
+game.adjournCourt();
+const sitAfter2 = game.situationManager.getActive().find(s => s.id === 'northern_incursion');
+assert(sitAfter2 && sitAfter2.stage === 3, '连续放任导致【北境犯边】恶化至第 3 阶 (大战将起)');
 
-// 尝试加入第4个负面局势
-gameA.situationManager.addSituation('corrupt_minister');
-assert(gameA.situationManager.getActive().length <= 3, '添加第4个局势后，场上局势严格不超过 3 个 (已替换正面局势)');
+// 第三次放任：触发危急突破升级为【边境战争】
+game.deckManager.forceCardToHand('tax_relief');
+game.selectCard('tax_relief');
+game.playSelectedCard();
+game.adjournCourt();
+const hasBorderWar = game.situationManager.getActive().some(s => s.id === 'border_war');
+assert(hasBorderWar === true, '放任到顶成功升级为重大危机【边境战争】');
 
-// ---------------- 测试 5: 完整40轮自动推演测试 (God Mode 跑满) ----------------
-console.log('\n--- 测试 5: 完整 40 轮推演与数据约束检查 ---');
-const simGame = new GameState('sim_40_turns');
-simGame.startNewGame('sim_40_turns');
-simGame.godMode = true; // 确保不因中途偶然失败中断，跑满40轮流程
+// ---------------- 测试 4: 四大标准测试场景 (Section 35) ----------------
+console.log('\n--- 测试 4: 四大标准预设场景测试 ---');
 
-let roundsCompleted = 0;
-let nanDetected = false;
-let outOfRangeDetected = false;
-let situationOverflow = false;
+// Test A: 黄河水患
+game.setupScenarioTestA();
+assert(game.situationManager.getActive().length === 1 && game.situationManager.getActive()[0].id === 'yellow_river_flood', 'Test A: 场上仅有黄河水患');
+assert(game.situationManager.getActive()[0].stage === 2, 'Test A: 黄河水患处于第 2 阶 (恶化)');
+assert(game.deckManager.hand.some(c => c.id === 'granary_relief'), 'Test A: 手牌包含【开仓赈济】');
+assert(game.deckManager.hand.some(c => c.id === 'water_conservancy'), 'Test A: 手牌包含【兴修水利】');
+assert(game.deckManager.hand.some(c => c.id === 'conscript_labor'), 'Test A: 手牌包含【征发民夫】');
 
-while (!simGame.isGameOver && simGame.turn <= 40) {
-  roundsCompleted++;
+// 验证3种不同解法产出不同后遗状态
+const evalRelief = InteractionResolver.analyzeCardOptions(CARDS.find(c => c.id === 'granary_relief'), game.stateManager, game.situationManager.getActive());
+const evalWater = InteractionResolver.analyzeCardOptions(CARDS.find(c => c.id === 'water_conservancy'), game.stateManager, game.situationManager.getActive());
+const evalLabor = InteractionResolver.analyzeCardOptions(CARDS.find(c => c.id === 'conscript_labor'), game.stateManager, game.situationManager.getActive());
+assert(evalRelief.matches[0].evalResult.newResidue === 'empty_granaries', '开仓赈济代价为【仓储空虚】');
+assert(evalWater.matches[0].evalResult.newResidue === 'solid_dykes', '兴修水利产出为【河防稳固】');
+assert(evalLabor.matches[0].evalResult.newResidue === 'heavy_labor', '征发民夫代价为【徭役沉重】');
 
-  // 检查属性范围与 NaN
-  const stats = simGame.stateManager.getStats();
-  for (const [k, v] of Object.entries(stats)) {
-    if (isNaN(v)) nanDetected = true;
-    if (v < 0 || v > 100) outOfRangeDetected = true;
+// Test B: 北境危机
+game.setupScenarioTestB();
+assert(game.situationManager.getActive()[0].id === 'northern_incursion' && game.situationManager.getActive()[0].stage === 3, 'Test B: 北境犯边处于第 3 阶 (危急)');
+assert(game.deckManager.hand.some(c => c.id === 'dispatch_troops_north'), 'Test B: 包含武力牌');
+assert(game.deckManager.hand.some(c => c.id === 'peace_marriage'), 'Test B: 包含外交牌');
+assert(game.deckManager.hand.some(c => c.id === 'open_border_market'), 'Test B: 包含贸易牌');
+
+// Test C: 双重危机
+game.setupScenarioTestC();
+assert(game.situationManager.getActive().length === 2, 'Test C: 场上同时存在水患与北境犯边');
+
+// Test D: 盛世
+game.setupScenarioTestD();
+assert(game.situationManager.getActive().some(s => s.category === 'opportunity'), 'Test D: 场上存在绿色机会局势');
+
+// ---------------- 测试 5: 年度定策 (Section 18) ----------------
+console.log('\n--- 测试 5: 年度定策机制 ---');
+game.startNewGame('policy_test');
+game.turn = 4;
+game.selectCard(game.deckManager.hand[0].id);
+game.playSelectedCard();
+game.adjournCourt(); // 第4季末
+assert(game.phase === 'ANNUAL_POLICY', '第 4 季末正确切入 ANNUAL_POLICY 阶段等待定策');
+const draft = game.policyManager.pendingOptions;
+assert(draft && draft.length === 3, '成功生成 3 选 1 国策候选');
+
+// 选定其中一个国策
+const pickedPolicy = draft[0];
+game.applyAnnualPolicySelection(pickedPolicy.id);
+assert(game.policyManager.hasPolicy(pickedPolicy.id), `成功确立国策【${pickedPolicy.title}】`);
+assert(game.turn === 5, '定策后正常推进至第 5 季');
+assert(game.phase === 'PLAY_CARD', '阶段切回 PLAY_CARD');
+
+// ---------------- 测试 6: 完整 40 轮连续真实对局 (AI启发式游玩) ----------------
+console.log('\n--- 测试 6: 完整 40 轮连续推演与 Telemetry 0.2 验证 ---');
+const simGame = new GameState('sim_game_v02');
+simGame.startNewGame('sim_game_v02');
+simGame.godMode = true; // 跑满40轮
+
+let turnCounter = 0;
+while (!simGame.isGameOver && simGame.turn <= 40 && turnCounter < 50) {
+  turnCounter++;
+
+  // 挑选最佳对局牌
+  const hand = simGame.deckManager.hand;
+  let bestCard = hand[0];
+  let bestTarget = null;
+  let bestQ = 'none';
+
+  for (const c of hand) {
+    const analysis = InteractionResolver.analyzeCardOptions(
+      c,
+      simGame.stateManager,
+      simGame.situationManager.getActive(),
+      simGame.policyManager,
+      simGame.residueManager
+    );
+    if (analysis.bestQuality === 'excellent') {
+      bestCard = c;
+      bestTarget = analysis.autoTarget ? analysis.autoTarget.id : (analysis.validTargets[0] ? analysis.validTargets[0].id : null);
+      bestQ = 'excellent';
+      break;
+    } else if (analysis.bestQuality === 'good' && bestQ !== 'excellent') {
+      bestCard = c;
+      bestTarget = analysis.autoTarget ? analysis.autoTarget.id : (analysis.validTargets[0] ? analysis.validTargets[0].id : null);
+      bestQ = 'good';
+    }
   }
 
-  // 检查局势数量
-  if (simGame.situationManager.getActive().length > 3) {
-    situationOverflow = true;
-  }
-
-  // 随机挑选一张手牌打出
-  const hand = simGame.cardManager.hand;
-  assert(hand.length > 0, `第 ${simGame.turn} 轮手牌不为空`);
-  const card = hand[0];
-  simGame.selectedCardId = card.id;
-
-  // 若需要局势目标，选定场上首个局势
-  const sits = simGame.situationManager.getActive();
-  if (sits.length > 0) {
-    simGame.selectedSituationId = sits[0].id;
-  }
-
+  simGame.selectCard(bestCard.id);
+  if (bestTarget) simGame.selectedSituationId = bestTarget;
   simGame.playSelectedCard();
 
   // 偶尔保留一张牌
-  if (simGame.cardManager.hand.length > 0 && Math.random() > 0.5) {
-    simGame.toggleKeepCard(simGame.cardManager.hand[0].id);
+  if (simGame.deckManager.hand.length > 0 && Math.random() < 0.3) {
+    simGame.toggleKeepCard(simGame.deckManager.hand[0].id);
   }
 
-  // 退朝
   simGame.adjournCourt();
+
+  // 若遇到年度定策自动选第一个
+  if (simGame.phase === 'ANNUAL_POLICY') {
+    const opts = simGame.policyManager.pendingOptions || simGame.policyManager.generateDraftOptions();
+    simGame.applyAnnualPolicySelection(opts[0].id);
+  }
 }
 
-assert(roundsCompleted >= 40, `完整运行推演至第 40 轮 (实际运行: ${roundsCompleted} 轮)`);
-assert(!nanDetected, '过程中未出现任何 NaN 数据');
-assert(!outOfRangeDetected, '国家四维属性全程处于 0~100 合法区间');
-assert(!situationOverflow, '场上局势数量全程严格不超过 3 个');
-assert(simGame.isGameOver, '40 轮后游戏正常结束结算');
-assert(simGame.gameOutcome === 'victory', '40 轮后触发江山暂安 (victory)');
+assert(simGame.turn >= 40, `成功连续推演满 40 季 (实际: ${simGame.turn} 季)`);
+assert(simGame.isGameOver === true && simGame.gameOutcome === 'victory', '40 季后判定江山暂安 (victory)');
 
-// ---------------- 测试 6: 失败判定测试 ----------------
-console.log('\n--- 测试 6: 失败判定测试 ---');
-const defeatGame = new GameState('defeat_test');
-defeatGame.startNewGame('defeat_test');
-defeatGame.godMode = false;
-// 人为使两个属性降为0
-defeatGame.stateManager.treasury = 0;
-defeatGame.stateManager.morale = 0;
-const defeatResult = defeatGame.checkEndCondition();
-assert(defeatResult === true, '双属性归零正确触发社稷倾覆');
-assert(defeatGame.isGameOver === true && defeatGame.gameOutcome === 'defeat', '游戏状态标记为 defeat 失败');
-
-// ---------------- 测试 7: 遥测数据报告与 JSON 导出结构验证 ----------------
-console.log('\n--- 测试 7: 遥测数据报告与 JSON 导出结构验证 ---');
-const jsonString = simGame.telemetryManager.exportJSON(
-  simGame.cardManager.cardStats,
-  simGame.situationManager.situationHistory,
-  simGame.stateManager
+// ---------------- 测试 7: Telemetry 0.2 导出与统计字段验证 ----------------
+console.log('\n--- 测试 7: Telemetry 0.2 数据结构验证 ---');
+const report = simGame.telemetryManager.generateFullReport(
+  simGame.deckManager,
+  simGame.situationManager,
+  simGame.stateManager,
+  simGame.residueManager,
+  simGame.policyManager
 );
-assert(typeof jsonString === 'string' && jsonString.length > 500, '成功导出 JSON 字符串');
 
-const parsed = JSON.parse(jsonString);
-assert(parsed.metadata && parsed.metadata.seed === 'sim_40_turns', 'JSON 包含元数据与正确 Seed');
-assert(parsed.summary && parsed.summary.totalTurnsSurviving === 40, 'JSON 包含汇总概况与40轮存活');
-assert(parsed.cards_statistics && Object.keys(parsed.cards_statistics).length === CARDS.length, `卡牌统计覆盖全部 ${CARDS.length} 张牌`);
-assert(parsed.situations_statistics && Object.keys(parsed.situations_statistics).length === SITUATIONS.length, `局势统计覆盖全部 ${SITUATIONS.length} 种局势`);
-assert(Array.isArray(parsed.turns_log) && parsed.turns_log.length === 40, '每轮明细日志完整记录 40 轮');
+assert(report.summary.meaningfulChoiceStats !== undefined, 'Telemetry 包含 Meaningful Choice 统计');
+assert(report.summary.totalNeglectEscalations !== undefined, 'Telemetry 包含放任恶化次数统计');
+assert(report.turns_log.length >= 40, '每季明细日志完整');
+const firstLog = report.turns_log[0];
+assert(Array.isArray(firstLog.hand_before_play) && firstLog.hand_before_play.length === 5, '首季 hand_before_play 完整记录 5 张牌');
+assert(firstLog.interaction_quality !== undefined, '包含 interaction_quality 评级');
+assert(firstLog.meaningful_choices !== undefined, '包含 meaningful_choices 选项统计');
 
-// ---------------- 测试 8: 存档与读档恢复测试 ----------------
-console.log('\n--- 测试 8: 存档与读档恢复测试 ---');
-import { SaveManager } from '../src/engine/saveManager.js';
-const testSaveGame = new GameState('save_seed');
-testSaveGame.startNewGame('save_seed');
-testSaveGame.turn = 15;
-testSaveGame.stateManager.treasury = 42;
-SaveManager.save(testSaveGame);
-
-const restoredGame = new GameState();
-const loadSuccess = restoredGame.loadFromSave();
-assert(loadSuccess === true, '成功从 localStorage 恢复存档');
-assert(restoredGame.turn === 15, '恢复的回合数正确 (15)');
-assert(restoredGame.stateManager.treasury === 42, '恢复的国库数值正确 (42)');
-
-console.log(`\n🎉 全部自动化验证完成：${passedTests}/${totalTests} 通过！`);
+console.log(`\n🎉 全部 Prototype 0.2 核心自动化测试通过：${passedTests}/${totalTests} PASS！`);

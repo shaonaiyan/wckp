@@ -1,5 +1,8 @@
-// 主界面渲染与交互渲染器
+// Prototype 0.2 主界面渲染器 (UIRenderer)
+// 强调局势三阶段印记、可行方向、卡牌人格、自动索敌锁定与代价预告
+
 import { BALANCE } from '../data/balance.js';
+import { InteractionResolver } from '../engine/interactionResolver.js';
 
 export class UIRenderer {
   constructor(game, container) {
@@ -7,29 +10,26 @@ export class UIRenderer {
     this.container = container;
   }
 
-  // 全量渲染刷新
   render() {
     this.renderTopBar();
+    this.renderResiduesAndPolicies();
     this.renderSituations();
     this.renderHand();
     this.renderActionBar();
     this.renderHistorySidebar();
-    this.renderStatesBadges();
   }
 
-  // 顶部状态栏渲染
+  // 顶部四项健康度与纪年
   renderTopBar() {
     const timeEl = document.getElementById('dynasty-time');
     const eraEl = document.getElementById('dynasty-era');
     if (timeEl) timeEl.textContent = this.game.getCurrentTimeText();
-    if (eraEl) eraEl.textContent = `大统第 ${this.game.turn} / ${BALANCE.MAX_TURNS} 季`;
+    if (eraEl) eraEl.textContent = `治世第 ${this.game.turn} / ${BALANCE.MAX_TURNS} 季`;
 
     const stats = this.game.stateManager.getStats();
     const tiers = this.game.stateManager.getAllTiers();
 
-    // 四项核心属性
-    const statKeys = ['treasury', 'morale', 'military', 'court'];
-    for (const key of statKeys) {
+    ['treasury', 'morale', 'military', 'court'].forEach(key => {
       const tier = tiers[key];
       const val = stats[key];
       const tierEl = document.getElementById(`stat-tier-${key}`);
@@ -47,96 +47,137 @@ export class UIRenderer {
       if (tooltipEl) {
         tooltipEl.textContent = `${val}/100`;
       }
-    }
+    });
   }
 
-  // 长期状态徽章渲染
-  renderStatesBadges() {
+  // 渲染后遗状态 (Residues) 与年度国策 (Policies) 徽章
+  renderResiduesAndPolicies() {
     const listEl = document.getElementById('active-states-list');
     if (!listEl) return;
     listEl.innerHTML = '';
 
-    const states = this.game.stateManager.longTermStates;
-    if (states.length === 0) {
-      listEl.innerHTML = '<span class="empty-state-hint">暂无长期定规</span>';
+    const residues = this.game.residueManager.getActive();
+    const policies = this.game.policyManager.getActive();
+
+    if (residues.length === 0 && policies.length === 0) {
+      listEl.innerHTML = '<span class="empty-state-hint">案头清简 · 暂无沉疴与国策羁绊</span>';
       return;
     }
 
-    import('../data/states.js').then(({ LONG_TERM_STATES }) => {
-      states.forEach(sid => {
-        const def = LONG_TERM_STATES[sid];
-        if (!def) return;
-        const badge = document.createElement('div');
-        badge.className = `state-badge state-${def.type}`;
-        badge.innerHTML = `
-          <span class="badge-dot"></span>
-          <span class="badge-title">【${def.name}】</span>
-          <div class="state-popover">
-            <div class="popover-title">【${def.name}】</div>
-            <div class="popover-desc">${def.description}</div>
-          </div>
-        `;
-        listEl.appendChild(badge);
-      });
+    // 年度国策徽章
+    policies.forEach(p => {
+      const badge = document.createElement('div');
+      badge.className = 'state-badge badge-policy';
+      badge.innerHTML = `
+        <span class="badge-tag">国策</span>
+        <span class="badge-title">【${p.title}】</span>
+        <div class="state-popover">
+          <div class="popover-title">国策：${p.name}</div>
+          <div class="popover-desc">${p.description}</div>
+        </div>
+      `;
+      listEl.appendChild(badge);
+    });
+
+    // 后遗状态徽章
+    residues.forEach(r => {
+      const badge = document.createElement('div');
+      badge.className = `state-badge badge-residue residue-${r.type}`;
+      badge.innerHTML = `
+        <span class="badge-tag">后遗</span>
+        <span class="badge-title">【${r.name} · ${r.duration}季】</span>
+        <div class="state-popover">
+          <div class="popover-title">后遗：${r.name} (余${r.duration}季)</div>
+          <div class="popover-desc">${r.description}</div>
+        </div>
+      `;
+      listEl.appendChild(badge);
     });
   }
 
-  // 场上天下局势渲染 (最多3张)
+  // 渲染场上天下局势 (三阶段印记 ●○○ + 可行方向)
   renderSituations() {
     const container = document.getElementById('situations-board');
     if (!container) return;
     container.innerHTML = '';
 
     const situations = this.game.situationManager.getActive();
-    const selectedSituationId = this.game.selectedSituationId;
     const selectedCard = this.getSelectedCard();
+
+    // 预判当前选中卡牌的目标分析
+    let cardAnalysis = null;
+    if (selectedCard) {
+      cardAnalysis = InteractionResolver.analyzeCardOptions(
+        selectedCard,
+        this.game.stateManager,
+        situations,
+        this.game.policyManager,
+        this.game.residueManager
+      );
+    }
 
     situations.forEach(sit => {
       const cardEl = document.createElement('div');
       cardEl.className = `situation-card situation-${sit.category}`;
-      if (selectedSituationId === sit.id) cardEl.classList.add('selected');
 
-      // 检查是否与当前选中的手牌可响应
-      let isResponsive = false;
-      if (selectedCard) {
-        const matchesTags = selectedCard.tags && sit.responsiveTags &&
-          selectedCard.tags.some(t => sit.responsiveTags.includes(t));
-        const matchesCat = sit.responsiveTags && sit.responsiveTags.includes(selectedCard.category);
-        const matchesDirect = selectedCard.targetTags && selectedCard.targetTags.some(t => sit.responsiveTags.includes(t) || sit.id === t);
-        if (matchesTags || matchesCat || matchesDirect) {
-          isResponsive = true;
-          cardEl.classList.add('highlight-responsive');
+      const isTargeted = this.game.selectedSituationId === sit.id;
+      if (isTargeted) cardEl.classList.add('selected');
+
+      // 自动索敌或多目标合法判断
+      let matchInfo = null;
+      if (cardAnalysis && cardAnalysis.matches) {
+        matchInfo = cardAnalysis.matches.find(m => m.situation.id === sit.id);
+      }
+
+      if (matchInfo) {
+        cardEl.classList.add('applicable-target');
+        if (this.game.autoTargeted && isTargeted) {
+          cardEl.classList.add('auto-locked');
         }
       }
 
-      // 局势等级标识 (点或阶)
+      // 三阶段压力印记
       let stageDots = '';
+      const stageConfig = BALANCE.SITUATION_STAGES[sit.stage] || { name: '稳定', symbol: '○○○' };
       for (let i = 1; i <= (sit.maxStage || 3); i++) {
-        stageDots += `<span class="stage-pip ${i <= sit.stage ? 'active' : ''}"></span>`;
+        const filled = i <= sit.stage;
+        stageDots += `<span class="stage-pip ${filled ? 'active' : ''}"></span>`;
       }
 
-      // 持续时间描述
-      const durationText = sit.duration > 0 ? `余 ${sit.duration} 季` : '持久常驻';
+      // 阶段描述与标题
+      const profile = (sit.stageProfiles && sit.stageProfiles[sit.stage])
+        ? sit.stageProfiles[sit.stage]
+        : { name: sit.name, desc: sit.description };
 
-      // 影响效果描述
-      const effectsList = [];
-      if (sit.tickEffect.treasury) effectsList.push(`国库 ${sit.tickEffect.treasury > 0 ? '+' : ''}${sit.tickEffect.treasury}`);
-      if (sit.tickEffect.morale) effectsList.push(`民心 ${sit.tickEffect.morale > 0 ? '+' : ''}${sit.tickEffect.morale}`);
-      if (sit.tickEffect.military) effectsList.push(`军势 ${sit.tickEffect.military > 0 ? '+' : ''}${sit.tickEffect.military}`);
-      if (sit.tickEffect.court) effectsList.push(`朝局 ${sit.tickEffect.court > 0 ? '+' : ''}${sit.tickEffect.court}`);
+      const categoryLabel = sit.category === 'opportunity'
+        ? '机会'
+        : (sit.category === 'crisis' ? '重大危机' : '政患');
 
-      const categoryLabel = sit.category === 'positive' ? '祥兆' : (sit.category === 'crisis' ? '重大危机' : '政患');
+      // 可行方向提示标签
+      const hintsHtml = (sit.directionHints || []).map(h => `<span class="dir-hint">${h}</span>`).join(' ');
+
+      // 若与选中卡牌匹配，展示评级标签
+      let qualityBadge = '';
+      if (matchInfo) {
+        const q = matchInfo.evalResult.quality;
+        const qConfig = BALANCE.INTERACTION_QUALITIES[q] || { label: q, symbol: '•' };
+        qualityBadge = `<div class="target-eval-badge quality-${q}">${qConfig.symbol} ${qConfig.label}</div>`;
+      }
 
       cardEl.innerHTML = `
         <div class="sit-header">
-          <span class="sit-tag tag-${sit.category}">${categoryLabel}</span>
-          <span class="sit-duration">${durationText}</span>
+          <span class="sit-tag tag-${sit.category}">${categoryLabel} · ${stageConfig.name}</span>
+          <div class="sit-pips-wrap" title="阶段等次">${stageDots}</div>
         </div>
         <div class="sit-name">【${sit.name}】</div>
-        <div class="sit-stage">烈度等次：${stageDots}</div>
-        <div class="sit-desc">${sit.description}</div>
-        <div class="sit-effects">每季影响：${effectsList.length ? effectsList.join('，') : '微弱'}</div>
-        ${isResponsive ? '<div class="sit-responsive-tip">◈ 选中奏折切中该局势</div>' : ''}
+        <div class="sit-subname">${profile.name}</div>
+        <div class="sit-desc">${profile.desc}</div>
+        <div class="sit-directions-bar">
+          <div class="dir-label">可行方向：</div>
+          <div class="dir-list">${hintsHtml}</div>
+        </div>
+        ${qualityBadge}
+        ${this.game.autoTargeted && isTargeted ? '<div class="auto-target-indicator">◈ 已自动锁定目标</div>' : ''}
       `;
 
       cardEl.addEventListener('click', () => {
@@ -148,25 +189,25 @@ export class UIRenderer {
       container.appendChild(cardEl);
     });
 
-    // 若场上局势少于3个，填充雅致木案留白
+    // 补充留白
     const emptyCount = BALANCE.MAX_ACTIVE_SITUATIONS - situations.length;
     for (let i = 0; i < emptyCount; i++) {
       const placeholder = document.createElement('div');
       placeholder.className = 'situation-placeholder';
-      placeholder.innerHTML = '<span>案头无急务 · 暂安</span>';
+      placeholder.innerHTML = '<span>案头无急政 · 暂安</span>';
       container.appendChild(placeholder);
     }
   }
 
-  // 底部手牌渲染 (5张奏折折子)
+  // 渲染底部手牌 (5张折子奏折)
   renderHand() {
     const handContainer = document.getElementById('hand-cards');
     if (!handContainer) return;
     handContainer.innerHTML = '';
 
-    const hand = this.game.cardManager.hand;
+    const hand = this.game.deckManager.hand;
     const selectedId = this.game.selectedCardId;
-    const keptCard = this.game.cardManager.keptCard;
+    const keptCard = this.game.deckManager.keptCard;
     const isPostPlay = this.game.phase === 'POST_PLAY';
 
     hand.forEach(card => {
@@ -175,53 +216,47 @@ export class UIRenderer {
       if (selectedId === card.id) cardEl.classList.add('selected');
       if (card.isKeptFromPrev) cardEl.classList.add('kept-from-prev');
 
-      const isThisCardKept = keptCard && keptCard.id === card.id;
-      if (isThisCardKept) cardEl.classList.add('marked-to-keep');
+      const isKept = keptCard && keptCard.id === card.id;
+      if (isKept) cardEl.classList.add('marked-to-keep');
 
-      // 动态警告提示
-      let warningHtml = '';
-      if (typeof card.warningCondition === 'function' && card.warningCondition(this.game.situationManager.getActive())) {
-        warningHtml = `<div class="card-warning-hint">${card.warningHint || '⚠ 局势不利'}</div>`;
-      }
-
-      // 印章/标签
+      // 印章
       let sealTag = '';
       if (card.isKeptFromPrev) {
         sealTag = '<span class="card-seal-tag seal-past">上季遗策</span>';
       }
-      if (isThisCardKept) {
+      if (isKept) {
         sealTag += '<span class="card-seal-tag seal-keep">留待下朝</span>';
       }
 
-      // 分类名
-      const catConfig = BALANCE.CARD_CATEGORIES[card.category] || { name: '杂务' };
+      // 卡牌标签徽章
+      const tagsHtml = card.tags.map(t => `<span class="card-tag-pill">${BALANCE.TAG_NAMES[t] || t}</span>`).join('');
 
       cardEl.innerHTML = `
         <div class="card-spine"></div>
         <div class="card-content-wrap">
+          ${isPostPlay ? `
+            <div class="quick-keep-bar">
+              <button class="btn-quick-keep ${isKept ? 'active' : ''}">
+                ${isKept ? '已留' : '留'}
+              </button>
+            </div>
+          ` : ''}
           <div class="card-top-row">
-            <span class="card-category-label">${catConfig.name}</span>
+            <div class="card-tags-list">${tagsHtml}</div>
             ${sealTag}
           </div>
           <div class="card-title">${card.name}</div>
+          <div class="card-personality">${card.personality || '中正平允'}</div>
           <div class="card-summary">${card.description}</div>
-          <div class="card-effect-preview">${card.effectDisplay}</div>
-          ${warningHtml}
-          ${isPostPlay ? `
-            <button class="btn-toggle-keep ${isThisCardKept ? 'active' : ''}">
-              ${isThisCardKept ? '已留待下朝' : '留待下朝'}
-            </button>
-          ` : ''}
         </div>
       `;
 
-      // 点击交互
       if (!isPostPlay) {
         cardEl.addEventListener('click', () => {
           this.game.selectCard(card.id);
         });
       } else {
-        const keepBtn = cardEl.querySelector('.btn-toggle-keep');
+        const keepBtn = cardEl.querySelector('.btn-quick-keep');
         if (keepBtn) {
           keepBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -237,7 +272,7 @@ export class UIRenderer {
     });
   }
 
-  // 底部控制按钮与操作提示栏
+  // 渲染操作控制栏与预期后果预告
   renderActionBar() {
     const playBtn = document.getElementById('btn-play-card');
     const adjournBtn = document.getElementById('btn-adjourn-court');
@@ -249,16 +284,36 @@ export class UIRenderer {
     if (hintEl) {
       if (this.game.phase === 'PLAY_CARD') {
         if (!selectedCard) {
-          hintEl.textContent = '请从案头奏折中挑选一卷批复施行。每季仅可行一策。';
-        } else if (selectedCard.targetType === 'situation' && !this.game.selectedSituationId) {
-          hintEl.textContent = `【${selectedCard.name}】需选定具体天下局势作为目标，请点击上方局势牌。`;
+          hintEl.innerHTML = '请挑选案头奏折批复施行。<strong>每季仅可行一策</strong>。';
         } else {
-          hintEl.textContent = `已选定【${selectedCard.name}】。点击「盖印奉旨」即行实施。`;
+          const analysis = InteractionResolver.analyzeCardOptions(
+            selectedCard,
+            this.game.stateManager,
+            this.game.situationManager.getActive(),
+            this.game.policyManager,
+            this.game.residueManager
+          );
+
+          const targetSituation = this.game.selectedSituationId
+            ? this.game.situationManager.getActive().find(s => s.id === this.game.selectedSituationId)
+            : analysis.autoTarget;
+
+          if (targetSituation) {
+            const q = analysis.bestQuality;
+            const qConfig = BALANCE.INTERACTION_QUALITIES[q] || { label: q };
+            hintEl.innerHTML = `将施策于：<strong>【${targetSituation.name}】</strong> (评级：<span class="quality-text-${q}">${qConfig.label}</span>) ── 预期后果：${analysis.costPreview}`;
+          } else if (analysis.validTargets.length > 1) {
+            hintEl.innerHTML = `【${selectedCard.name}】可用于多个局势，<strong>请点击上方目标局势卡</strong>指定。`;
+          } else {
+            hintEl.innerHTML = `【${selectedCard.name}】将作为通用国政施行。预期影响：${selectedCard.personality}`;
+          }
         }
       } else if (isPostPlay) {
-        hintEl.textContent = '此策已定。可挑选至多一卷手牌「留待下朝」，或直接点击「退朝」。';
+        hintEl.innerHTML = '政令已布。<strong>可点击剩余奏折上方的【留】按钮留存一策</strong>，或直接「退朝」。';
+      } else if (this.game.phase === 'ANNUAL_POLICY') {
+        hintEl.innerHTML = '岁末廷议，请从朝议定策中确立来年国策。';
       } else if (this.game.phase === 'ENDED') {
-        hintEl.textContent = '朝事已毕。';
+        hintEl.innerHTML = '天命所止，大朝已毕。';
       }
     }
 
@@ -283,44 +338,31 @@ export class UIRenderer {
     }
   }
 
-  // 渲染左侧史册
+  // 渲染史册
   renderHistorySidebar() {
     const listEl = document.getElementById('chronicle-list');
     if (!listEl) return;
     listEl.innerHTML = '';
 
     const entries = this.game.historyManager.getAllEntries();
-    // 逆序展示最近的历史
     [...entries].reverse().forEach(entry => {
       const item = document.createElement('div');
       item.className = `chronicle-item item-${entry.type}`;
-
-      let deltaSummary = '';
-      if (entry.delta) {
-        const changes = [];
-        if (entry.delta.treasury) changes.push(`国库${entry.delta.treasury > 0 ? '+' : ''}${entry.delta.treasury}`);
-        if (entry.delta.morale) changes.push(`民心${entry.delta.morale > 0 ? '+' : ''}${entry.delta.morale}`);
-        if (entry.delta.military) changes.push(`军势${entry.delta.military > 0 ? '+' : ''}${entry.delta.military}`);
-        if (entry.delta.court) changes.push(`朝局${entry.delta.court > 0 ? '+' : ''}${entry.delta.court}`);
-        if (changes.length > 0) deltaSummary = `(${changes.join(' ')})`;
-      }
-
       item.innerHTML = `
         <div class="chronicle-time">${entry.timeText}</div>
-        <div class="chronicle-title">${entry.title} <span class="chronicle-delta">${deltaSummary}</span></div>
+        <div class="chronicle-title">${entry.title}</div>
         <div class="chronicle-text">${entry.text}</div>
       `;
       listEl.appendChild(item);
     });
   }
 
-  // 获取当前选中的手牌对象
   getSelectedCard() {
     if (!this.game.selectedCardId) return null;
-    return this.game.cardManager.hand.find(c => c.id === this.game.selectedCardId);
+    return this.game.deckManager.hand.find(c => c.id === this.game.selectedCardId);
   }
 
-  // 播放打牌出牌视觉动效（玉玺盖印 + 历史文本飘出）
+  // 出牌反馈 (玉玺盖印 + 明确的阶段演变与后遗状态生成提示)
   playCardFeedback(result) {
     const overlay = document.getElementById('seal-animation-overlay');
     const sealImg = document.getElementById('imperial-seal-stamp');
@@ -331,20 +373,33 @@ export class UIRenderer {
     if (overlay && sealImg) {
       overlay.classList.remove('hidden');
       sealImg.classList.add('stamp-down');
-
       setTimeout(() => {
         sealImg.classList.remove('stamp-down');
         overlay.classList.add('hidden');
-      }, 700);
+      }, 650);
     }
 
     if (feedbackBox && feedbackText) {
-      feedbackText.textContent = `“${result.flavor}”`;
+      let stageChangeText = '';
+      if (result.targetSituation && result.sitResolution) {
+        stageChangeText = `<div class="feedback-stage-change">【${result.targetSituation.name}】：${result.sitResolution.text}</div>`;
+      }
 
-      // 渲染变化浮动数值
+      let residueText = '';
+      if (result.residueCreated && result.residueCreated.residue) {
+        residueText = `<div class="feedback-residue-gain">✦ 种下因果：获得【${result.residueCreated.residue.name}】</div>`;
+      }
+
+      feedbackText.innerHTML = `
+        <div class="feedback-headline">${result.headline}</div>
+        <div class="feedback-quote">“${result.historyText}”</div>
+        ${stageChangeText}
+        ${residueText}
+      `;
+
       if (feedbackDeltas) {
         feedbackDeltas.innerHTML = '';
-        const d = result.delta;
+        const d = result.statDelta;
         const labels = [
           { key: 'treasury', name: '国库' },
           { key: 'morale', name: '民心' },

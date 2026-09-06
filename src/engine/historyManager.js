@@ -1,10 +1,12 @@
-// 史册编年史管理器：格式化编年史历史记录，生成简短历史条目
+// Prototype 0.2 史册因果编年史管理器 (HistoryManager)
+// 记录清晰的因果链条：原因 / 局势背景 → 圣意决断 → 产生后果与后遗状态
+
 import { BALANCE } from '../data/balance.js';
 
 export class HistoryManager {
   constructor(eraName = '永和') {
     this.eraName = eraName;
-    this.entries = []; // [{ turn, year, season, title, text, deltaSummary }]
+    this.entries = []; // [{ turn, timeText, title, text, type, tag }]
   }
 
   reset(eraName) {
@@ -12,11 +14,9 @@ export class HistoryManager {
     this.entries = [];
   }
 
-  // 获取纪年文本，如 "永和二年 秋"
   getYearSeasonText(turn) {
     const year = Math.floor((turn - 1) / BALANCE.ROUNDS_PER_YEAR) + 1;
-    const seasonIndex = (turn - 1) % BALANCE.ROUNDS_PER_YEAR;
-    const season = BALANCE.SEASONS[seasonIndex];
+    const season = BALANCE.SEASONS[(turn - 1) % BALANCE.ROUNDS_PER_YEAR];
     const yearChinese = this.toChineseNumber(year);
     return `${this.eraName}${yearChinese}年 ${season}`;
   }
@@ -30,49 +30,60 @@ export class HistoryManager {
     return digits[tens] + '十' + (ones === 0 ? '' : digits[ones]);
   }
 
-  // 记录开局登基
   recordCoronation() {
     this.entries.push({
       turn: 1,
       timeText: `${this.eraName}元年 春`,
       type: 'coronation',
-      title: '新帝登基',
-      text: '受命于天，践祚临轩。万邦来贺，天下尚安。'
+      title: '新帝践祚',
+      text: '受命于天，临御万邦。天下尚安，江南岁稔，朝臣待敕。'
     });
   }
 
-  // 记录一轮的出牌与局势发展
-  recordTurnEvent(turn, cardName, flavorText, delta, situationEventText = null) {
+  // 记录出牌因果链 (原因 → 行为 → 后果)
+  recordCausalAction(turn, situationName, cardName, historyText, residueName = null) {
     const timeText = this.getYearSeasonText(turn);
-    let shortText = flavorText;
-    if (situationEventText) {
-      shortText += ' ' + situationEventText;
+    let fullText = '';
+    if (situationName) {
+      fullText = `针对【${situationName}】，帝诏行【${cardName}】。${historyText}`;
+    } else {
+      fullText = `帝行【${cardName}】。${historyText}`;
     }
 
-    // 控制文本在 50 字左右
-    if (shortText.length > 60) {
-      shortText = shortText.slice(0, 58) + '…';
+    if (residueName) {
+      fullText += ` 因而种下【${residueName}】之因。`;
     }
 
     this.entries.push({
       turn,
       timeText,
       type: 'action',
-      title: `诏行【${cardName}】`,
-      text: shortText,
-      delta: { ...delta }
+      title: situationName ? `应对【${situationName}】` : `诏行【${cardName}】`,
+      text: fullText
     });
   }
 
-  // 记录重大危机发生或化解
-  recordCrisis(turn, text) {
+  // 记录放任恶化
+  recordNeglect(turn, situationName, stageText, historyText) {
     const timeText = this.getYearSeasonText(turn);
     this.entries.push({
       turn,
       timeText,
-      type: 'crisis',
-      title: '天下震动',
-      text
+      type: 'neglect',
+      title: `【${situationName}】放任恶化`,
+      text: `朝廷此前未予处置，【${situationName}】已由${stageText}。${historyText}`
+    });
+  }
+
+  // 记录年度定策
+  recordPolicy(turn, policyName, desc) {
+    const timeText = this.getYearSeasonText(turn);
+    this.entries.push({
+      turn,
+      timeText,
+      type: 'policy',
+      title: `朝议定策：${policyName}`,
+      text: `岁末召群臣合议，定国策为【${policyName}】。${desc}`
     });
   }
 
@@ -83,8 +94,8 @@ export class HistoryManager {
       turn,
       timeText,
       type: isVictory ? 'victory' : 'defeat',
-      title: isVictory ? '江山暂安' : '王朝倾覆',
-      text: isVictory ? '在位四十载四海晏然，终定一代治世基业。' : `国祚中断。${reason}。`
+      title: isVictory ? '江山暂安' : '社稷倾覆',
+      text: isVictory ? '在位四十载四海宴然，终成一代治世令主。' : `国祚中绝。${reason}。`
     });
   }
 

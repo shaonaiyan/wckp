@@ -3,27 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>一朝天子</title>
+  <title>一朝天子 · Prototype 0.2</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- 游戏主容器 (16:9比例优化) -->
+  <!-- 游戏主容器 (16:9比例) -->
   <div id="game-container" class="royal-desk-theme">
 
     <!-- 顶部天子御案总览区 -->
     <header id="royal-header">
       <div class="header-left">
-        <button id="btn-toggle-chronicle" class="wood-btn icon-btn" title="查阅史册">
+        <button id="btn-toggle-chronicle" class="wood-btn icon-btn" title="查阅史册因果">
           <span class="btn-icon">📜</span>
           <span class="btn-text">史册</span>
         </button>
         <div class="dynasty-badge">
           <div id="dynasty-time" class="era-time">永和元年 春</div>
-          <div id="dynasty-era" class="era-subtitle">大统第 1 / 40 季</div>
+          <div id="dynasty-era" class="era-subtitle">治世第 1 / 40 季</div>
         </div>
       </div>
 
-      <!-- 四项国家核心属性栏 -->
+      <!-- 四大宏观健康度概览 -->
       <div class="stats-overview">
         <!-- 国库 -->
         <div class="stat-card" data-stat="treasury">
@@ -75,21 +75,21 @@
       </div>
     </header>
 
-    <!-- 长期状态徽章条 -->
+    <!-- 长期后遗状态与国策条 -->
     <div id="active-states-bar">
-      <span class="states-bar-title">朝仪定规：</span>
+      <span class="states-bar-title">因果羁绊：</span>
       <div id="active-states-list" class="states-list">
-        <!-- 动态生成长期状态 -->
+        <!-- 动态生成后遗状态与国策徽章 -->
       </div>
     </div>
 
     <!-- 中央核心区域：天下局势 + 水墨山河底境 -->
     <main id="board-center">
-      <!-- 局势展台 (最多3张) -->
+      <!-- 局势展台 (最多3个主要局势) -->
       <section id="situations-section">
         <div class="section-title-subtle">─── 天 下 局 势 ───</div>
         <div id="situations-board" class="situations-row">
-          <!-- 动态生成最多3张局势牌 -->
+          <!-- 动态生成局势卡 -->
         </div>
       </section>
 
@@ -99,7 +99,7 @@
 
         <!-- 出牌后的即时反馈展卷 -->
         <div id="action-feedback-banner" class="hidden">
-          <div class="feedback-seal-mark">已奉旨</div>
+          <div class="feedback-seal-mark">圣意已决</div>
           <div id="feedback-flavor-text" class="feedback-flavor">“圣意既决，百司奉旨遵行。”</div>
           <div id="feedback-stat-deltas" class="feedback-deltas"></div>
         </div>
@@ -111,7 +111,7 @@
       <!-- 提示与当前指令状态 -->
       <div class="footer-control-row">
         <div id="action-hint-text" class="action-hint">
-          请从案头奏折中挑选一卷批复施行。每季仅可行一策。
+          请从案头奏折中挑选一卷批复施行。<strong>每季仅可行一策</strong>。
         </div>
         <div class="footer-buttons">
           <button id="btn-play-card" class="action-btn seal-btn disabled" disabled>
@@ -143,7 +143,7 @@
     <!-- 左侧：史册侧边抽屉 -->
     <aside id="chronicle-sidebar" class="drawer-panel left-drawer">
       <div class="drawer-header">
-        <h2 class="drawer-title">御批史册</h2>
+        <h2 class="drawer-title">御批史册 (因果因由)</h2>
         <button id="btn-close-chronicle" class="close-btn">&times;</button>
       </div>
       <div class="drawer-content">
@@ -153,51 +153,56 @@
       </div>
     </aside>
 
-    <!-- 右侧：DEBUG 抽屉 -->
+    <!-- 右侧：DEBUG 监控与控制台 -->
     <aside id="debug-drawer" class="drawer-panel right-drawer">
       <div class="drawer-header">
-        <h2 class="drawer-title">秘阁 DEBUG 监控台</h2>
+        <h2 class="drawer-title">秘阁 DEBUG 0.2 测试台</h2>
         <button id="btn-close-debug" class="close-btn">&times;</button>
       </div>
       <div class="drawer-content debug-content">
+
+        <!-- 4大标准测试场景 (Section 35) -->
+        <fieldset class="dbg-group">
+          <legend>0.2 核心玩法四大预设验证场景</legend>
+          <div class="dbg-scenario-grid">
+            <button id="dbg-btn-scenario-a" class="dbg-btn dbg-btn-scenario">Test A: 黄河水患</button>
+            <button id="dbg-btn-scenario-b" class="dbg-btn dbg-btn-scenario">Test B: 北境危机</button>
+            <button id="dbg-btn-scenario-c" class="dbg-btn dbg-btn-scenario">Test C: 双重危机取舍</button>
+            <button id="dbg-btn-scenario-d" class="dbg-btn dbg-btn-scenario">Test D: 盛世建设机会</button>
+          </div>
+        </fieldset>
+
         <!-- 实时信息 -->
         <fieldset class="dbg-group">
-          <legend>运行状态与四维数值</legend>
+          <legend>运行状态与真实实体牌库</legend>
           <div id="dbg-realtime-info" class="dbg-info-grid"></div>
         </fieldset>
 
-        <!-- 局势详情 -->
+        <!-- 当前手牌对局势的 Reaction Matrix 透视 -->
         <fieldset class="dbg-group">
-          <legend>当前场上局势 (上限3)</legend>
+          <legend>当前手牌 × 局势匹配矩阵 (Matrix)</legend>
+          <div id="dbg-matrix-info" class="dbg-matrix-wrap"></div>
+        </fieldset>
+
+        <!-- 局势详情与阶段调整 -->
+        <fieldset class="dbg-group">
+          <legend>当前局势阶梯控制</legend>
           <div id="dbg-sits-info" class="dbg-sits-list"></div>
-        </fieldset>
-
-        <!-- 权重与玩家倾向 -->
-        <fieldset class="dbg-group">
-          <legend>当前牌池权重分布</legend>
-          <div id="dbg-weights-info" class="dbg-weights-grid"></div>
-        </fieldset>
-
-        <fieldset class="dbg-group">
-          <legend>历史行为流派倾向</legend>
-          <div id="dbg-tendency-info" class="dbg-text-small"></div>
         </fieldset>
 
         <!-- 控制指令 -->
         <fieldset class="dbg-group">
-          <legend>直接干预与调试操作</legend>
+          <legend>干预与调试操作</legend>
           <div class="dbg-action-grid">
             <button id="dbg-btn-next-turn" class="dbg-btn">立即推进下一季</button>
             <button id="dbg-btn-godmode" class="dbg-btn">无失败模式: 关闭</button>
-            <button id="dbg-btn-jump-20" class="dbg-btn">快进至第20季</button>
-            <button id="dbg-btn-crisis" class="dbg-btn dbg-btn-warn">制造危机绝境</button>
+            <button id="dbg-btn-trigger-annual" class="dbg-btn dbg-btn-highlight">触发年度定策</button>
+            <button id="dbg-btn-clear-residues" class="dbg-btn">清空后遗状态</button>
             <button id="dbg-btn-clear-sits" class="dbg-btn">清空所有局势</button>
-            <button id="dbg-btn-clear-states" class="dbg-btn">清空长期状态</button>
-            <button id="dbg-btn-auto-sim" class="dbg-btn dbg-btn-highlight">40轮压力自测</button>
           </div>
 
           <div class="dbg-subgroup">
-            <label>数值调整 (±5)：</label>
+            <label>健康度数值调整 (±5)：</label>
             <div class="dbg-stat-adjusters">
               <span>国库: <button id="dbg-btn-treasury-minus">-</button><button id="dbg-btn-treasury-plus">+</button></span>
               <span>民心: <button id="dbg-btn-morale-minus">-</button><button id="dbg-btn-morale-plus">+</button></span>
@@ -207,35 +212,43 @@
           </div>
 
           <div class="dbg-subgroup">
-            <label>强制抽取指定卡牌：</label>
+            <label>置入指定卡牌进手牌：</label>
             <div class="dbg-flex-row">
               <select id="dbg-select-card" class="dbg-select"></select>
-              <button id="dbg-btn-force-card" class="dbg-btn">加入手牌</button>
+              <button id="dbg-btn-force-card" class="dbg-btn">放入手牌</button>
             </div>
           </div>
 
           <div class="dbg-subgroup">
-            <label>强制生成指定局势：</label>
+            <label>生成指定局势：</label>
             <div class="dbg-flex-row">
               <select id="dbg-select-sit" class="dbg-select"></select>
               <button id="dbg-btn-force-sit" class="dbg-btn">生成局势</button>
+            </div>
+          </div>
+
+          <div class="dbg-subgroup">
+            <label>施加指定后遗状态：</label>
+            <div class="dbg-flex-row">
+              <select id="dbg-select-residue" class="dbg-select"></select>
+              <button id="dbg-btn-force-residue" class="dbg-btn">附加状态</button>
             </div>
           </div>
         </fieldset>
 
         <!-- 种子与重启 -->
         <fieldset class="dbg-group">
-          <legend>随机种子与重启</legend>
+          <legend>随机种子与重置</legend>
           <div class="dbg-flex-row">
             <input type="text" id="dbg-input-seed" class="dbg-input" placeholder="输入自定义 Seed">
             <button id="dbg-btn-apply-seed" class="dbg-btn">以种子重启</button>
           </div>
-          <button id="dbg-btn-reset" class="dbg-btn dbg-btn-danger" style="margin-top: 8px; width: 100%;">重新开局 (清除存档)</button>
+          <button id="dbg-btn-reset" class="dbg-btn dbg-btn-danger" style="margin-top: 8px; width: 100%;">重新开局 (清空存档)</button>
         </fieldset>
 
         <!-- 数据导出 -->
         <fieldset class="dbg-group">
-          <legend>遥测数据导出 (用于AI平衡分析)</legend>
+          <legend>0.2 完整遥测数据导出</legend>
           <div class="dbg-flex-row">
             <button id="dbg-btn-export-json" class="dbg-btn dbg-btn-highlight">导出本局 JSON</button>
             <button id="dbg-btn-copy-json" class="dbg-btn">复制数据到剪贴板</button>
@@ -244,6 +257,16 @@
       </div>
     </aside>
 
+    <!-- 年度定策 (朝议定策 3选1) 模态弹窗 -->
+    <div id="annual-policy-modal" class="modal-overlay hidden">
+      <div class="modal-box royal-scroll-modal policy-modal">
+        <div class="modal-seal-mark">朝议定策</div>
+        <h2 class="modal-title">【岁末廷议 · 年度定策】</h2>
+        <p class="modal-subtitle">岁华聿更，群公毕集。请确立来年一代大政方略（三选一）：</p>
+        <div id="annual-policy-options" class="policy-options-grid"></div>
+      </div>
+    </div>
+
     <!-- 终局结算模态弹窗 -->
     <div id="game-over-modal" class="modal-overlay hidden">
       <div class="modal-box royal-scroll-modal">
@@ -251,9 +274,7 @@
         <h1 id="modal-dynasty-title" class="modal-title">【江山暂安】</h1>
         <p id="modal-dynasty-subtitle" class="modal-subtitle">历经四十季风雨，终得天下大定。</p>
         
-        <div id="modal-summary-content" class="modal-summary">
-          <!-- 动态总结内容 -->
-        </div>
+        <div id="modal-summary-content" class="modal-summary"></div>
 
         <div class="modal-buttons-row">
           <button id="modal-btn-export" class="wood-btn">导出本局统计 JSON</button>
@@ -279,8 +300,7 @@
       const debugPanel = new DebugPanel(game);
       const modalManager = new ModalManager(game);
 
-      // 绑定游戏事件与UI联动
-      game.onStateChanged = (g) => {
+      game.onStateChanged = () => {
         renderer.render();
         debugPanel.update();
       };
@@ -289,21 +309,24 @@
         renderer.playCardFeedback(result);
       };
 
+      game.onAnnualDraft = (options) => {
+        modalManager.showAnnualDraftModal(options);
+      };
+
       game.onGameOver = (data) => {
         modalManager.showGameOverModal(data);
       };
 
-      // 出牌按钮
+      // 按钮事件
       document.getElementById('btn-play-card').addEventListener('click', () => {
         game.playSelectedCard();
       });
 
-      // 退朝按钮
       document.getElementById('btn-adjourn-court').addEventListener('click', () => {
         game.adjournCourt();
       });
 
-      // 尝试从本地存档恢复，若无则开启新局
+      // 恢复存档或新局
       if (SaveManager.hasSave()) {
         const loaded = game.loadFromSave();
         if (!loaded) game.startNewGame();
@@ -311,7 +334,6 @@
         game.startNewGame();
       }
 
-      // 全局暴露便于排查
       window.__GAME__ = game;
     });
   </script>

@@ -1,4 +1,6 @@
-// 数据遥测与分析日志管理器
+// Prototype 0.2 遥测数据与深度统计管理器 (TelemetryManager)
+// 记录精确的出牌前手牌、自动索敌、交互评级、后遗状态、Meaningful Choice 分析与因果链
+
 export class TelemetryManager {
   constructor() {
     this.turnLogs = [];
@@ -8,17 +10,35 @@ export class TelemetryManager {
       eraName: null,
       startedAt: null,
       endedAt: null,
-      finalOutcome: null, // 'victory' | 'defeat'
+      finalOutcome: null,
       defeatReason: null,
       totalTurns: 0,
-      peakTurn: 0,
+      peakTurn: 1,
       peakStatsTotal: 0,
       mostSevereCrisis: null
     };
+
+    // 总体指标追踪
+    this.qualityCounts = {
+      excellent: 0,
+      good: 0,
+      weak: 0,
+      none: 0,
+      dangerous: 0
+    };
+    this.totalNeglectEscalations = 0;
   }
 
   reset(seed, eraName) {
     this.turnLogs = [];
+    this.qualityCounts = {
+      excellent: 0,
+      good: 0,
+      weak: 0,
+      none: 0,
+      dangerous: 0
+    };
+    this.totalNeglectEscalations = 0;
     this.gameMetadata = {
       gameId: 'dynasty_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
       seed,
@@ -34,25 +54,29 @@ export class TelemetryManager {
     };
   }
 
-  // 记录本轮数据快照
+  // 记录本轮数据快照 (严格执行 0.2 格式)
   logTurn(turnData) {
     this.turnLogs.push(turnData);
 
-    // 追踪最繁荣时期
-    const totalStats = turnData.stats_after.treasury + turnData.stats_after.morale +
-      turnData.stats_after.military + turnData.stats_after.court;
-    if (totalStats > this.gameMetadata.peakStatsTotal) {
-      this.gameMetadata.peakStatsTotal = totalStats;
+    if (turnData.interaction_quality && this.qualityCounts[turnData.interaction_quality] !== undefined) {
+      this.qualityCounts[turnData.interaction_quality]++;
+    }
+
+    // 追踪繁荣峰值
+    const statsTotal = (turnData.stats_after.treasury || 0) + (turnData.stats_after.morale || 0) +
+      (turnData.stats_after.military || 0) + (turnData.stats_after.court || 0);
+    if (statsTotal > this.gameMetadata.peakStatsTotal) {
+      this.gameMetadata.peakStatsTotal = statsTotal;
       this.gameMetadata.peakTurn = turnData.turn;
     }
 
-    // 追踪最严重危机
-    for (const s of turnData.situations_after) {
-      if (!this.gameMetadata.mostSevereCrisis || s.severity > this.gameMetadata.mostSevereCrisis.severity) {
+    // 追踪最高危机
+    for (const s of turnData.situation_after) {
+      if (!this.gameMetadata.mostSevereCrisis || (s.stage && s.stage > this.gameMetadata.mostSevereCrisis.stage)) {
         this.gameMetadata.mostSevereCrisis = {
+          id: s.id,
           name: s.name,
-          category: s.category,
-          severity: s.severity,
+          stage: s.stage,
           turn: turnData.turn
         };
       }
@@ -61,19 +85,22 @@ export class TelemetryManager {
     this.gameMetadata.totalTurns = turnData.turn;
   }
 
-  // 结算终局数据
+  recordNeglectEscalation() {
+    this.totalNeglectEscalations++;
+  }
+
   finalizeGame(outcome, reason) {
     this.gameMetadata.endedAt = new Date().toISOString();
     this.gameMetadata.finalOutcome = outcome;
-    this.gameMetadata.defeatReason = reason || (outcome === 'victory' ? '治理四十载，四海暂安' : '社稷崩解');
+    this.gameMetadata.defeatReason = reason || (outcome === 'victory' ? '历经四十季风雨，四海暂安' : '社稷倾覆');
   }
 
-  // 聚合生成完整分析报告
-  generateFullReport(cardStats, situationHistory, stateManager) {
-    // 1. 卡牌统计与使用率
+  // 聚合生成完整 0.2 统计分析报告
+  generateFullReport(deckManager, situationManager, stateManager, residueManager, policyManager) {
+    // 1. 卡牌统计
     const cardSummary = {};
-    for (const [cardId, stat] of Object.entries(cardStats)) {
-      const usageRate = stat.drawn > 0 ? (stat.played / stat.drawn * 100).toFixed(1) + '%' : '0%';
+    for (const [cardId, stat] of Object.entries(deckManager.cardStats)) {
+      const usageRate = stat.drawn > 0 ? ((stat.played / stat.drawn) * 100).toFixed(1) + '%' : '0%';
       cardSummary[cardId] = {
         drawn: stat.drawn,
         played: stat.played,
@@ -84,34 +111,29 @@ export class TelemetryManager {
 
     // 2. 局势统计
     const situationSummary = {};
-    for (const [sitId, stat] of Object.entries(situationHistory)) {
-      const avgDuration = stat.spawnCount > 0 ? (stat.totalTurnsActive / stat.spawnCount).toFixed(1) : 0;
+    for (const [sitId, stat] of Object.entries(situationManager.situationHistory)) {
+      const avgDuration = stat.spawnCount > 0 ? (stat.turnsActive / stat.spawnCount).toFixed(1) : 0;
       situationSummary[sitId] = {
         spawnCount: stat.spawnCount,
-        avgTurnsActive: Number(avgDuration),
         resolvedCount: stat.resolvedCount,
-        autoResolvedCount: stat.autoResolvedCount,
-        escalatedCount: stat.escalatedCount
+        neglectedEscalations: stat.neglectedEscalations,
+        avgTurnsActive: Number(avgDuration)
       };
     }
 
-    // 3. 玩家流派与卡牌类别使用比例
-    const categoryCounts = { ...stateManager.categoryCounts };
-    const totalPlayed = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
-    const categoryRatios = {};
-    for (const [cat, count] of Object.entries(categoryCounts)) {
-      categoryRatios[cat] = totalPlayed > 0 ? ((count / totalPlayed) * 100).toFixed(1) + '%' : '0%';
-    }
-
-    // 最常用卡牌流派
-    let favoredCategory = '均衡治理';
-    let maxCatCount = 0;
-    for (const [cat, count] of Object.entries(categoryCounts)) {
-      if (count > maxCatCount) {
-        maxCatCount = count;
-        favoredCategory = cat;
+    // 3. Meaningful Choice 统计汇总
+    let totalTurnsWithChoices = 0;
+    let sumMultiValidTurns = 0;
+    for (const t of this.turnLogs) {
+      if (t.meaningful_choices) {
+        totalTurnsWithChoices++;
+        const validOptions = (t.meaningful_choices.excellentChoiceCount || 0) + (t.meaningful_choices.goodChoiceCount || 0);
+        if (validOptions >= 2) sumMultiValidTurns++;
       }
     }
+    const multiValidChoiceRatio = totalTurnsWithChoices > 0
+      ? ((sumMultiValidTurns / totalTurnsWithChoices) * 100).toFixed(1) + '%'
+      : '0%';
 
     return {
       metadata: this.gameMetadata,
@@ -124,9 +146,15 @@ export class TelemetryManager {
           statsTotal: this.gameMetadata.peakStatsTotal
         },
         mostSevereCrisis: this.gameMetadata.mostSevereCrisis,
-        favoredCategory,
-        categoryRatios,
-        categoryCounts
+        totalNeglectEscalations: this.totalNeglectEscalations,
+        meaningfulChoiceStats: {
+          totalTurnsEvaluated: totalTurnsWithChoices,
+          turnsWithAtLeast2GoodOptions: sumMultiValidTurns,
+          multiValidChoiceRatio // 有压力时手牌至少有2种好解法的回合占比
+        },
+        interactionQualityDistribution: this.qualityCounts,
+        activeResiduesAtEnd: residueManager ? residueManager.getActive().map(r => r.name) : [],
+        activePoliciesAtEnd: policyManager ? policyManager.getActive().map(p => p.name) : []
       },
       cards_statistics: cardSummary,
       situations_statistics: situationSummary,
@@ -134,29 +162,26 @@ export class TelemetryManager {
     };
   }
 
-  // 导出 JSON 字符串
-  exportJSON(cardStats, situationHistory, stateManager) {
-    const report = this.generateFullReport(cardStats, situationHistory, stateManager);
+  exportJSON(deckManager, situationManager, stateManager, residueManager, policyManager) {
+    const report = this.generateFullReport(deckManager, situationManager, stateManager, residueManager, policyManager);
     return JSON.stringify(report, null, 2);
   }
 
-  // 触发浏览器下载
-  downloadJSON(cardStats, situationHistory, stateManager) {
-    const jsonStr = this.exportJSON(cardStats, situationHistory, stateManager);
+  downloadJSON(deckManager, situationManager, stateManager, residueManager, policyManager) {
+    const jsonStr = this.exportJSON(deckManager, situationManager, stateManager, residueManager, policyManager);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `yichao_tianzi_telemetry_${this.gameMetadata.seed || Date.now()}.json`;
+    a.download = `yichao_tianzi_v02_telemetry_${this.gameMetadata.seed || Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
 
-  // 复制到剪贴板
-  async copyJSON(cardStats, situationHistory, stateManager) {
-    const jsonStr = this.exportJSON(cardStats, situationHistory, stateManager);
+  async copyJSON(deckManager, situationManager, stateManager, residueManager, policyManager) {
+    const jsonStr = this.exportJSON(deckManager, situationManager, stateManager, residueManager, policyManager);
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(jsonStr);
       return true;

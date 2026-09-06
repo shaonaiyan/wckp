@@ -1,5 +1,6 @@
-// 多种子多局连续自动化回归与流派倾向测试
+// Prototype 0.2 多种子多局模拟与平衡性回归验证
 import { GameState } from '../src/game.js';
+import { InteractionResolver } from '../src/engine/interactionResolver.js';
 
 // Mock localStorage
 globalThis.localStorage = {
@@ -10,70 +11,86 @@ globalThis.localStorage = {
   clear() { this.store = {}; }
 };
 
-console.log('================ 运行 20 局多种子随机策略模拟 ================');
+console.log('================ 运行 Prototype 0.2 多局多种子策略模拟 ================');
 
 let victories = 0;
 let defeats = 0;
 const defeatReasons = {};
-let totalTurnsAcrossGames = 0;
+let totalTurns = 0;
+let totalExcellentPlays = 0;
+let totalGoodPlays = 0;
+let totalWeakPlays = 0;
+let totalNeglectEscalationsAll = 0;
 
 for (let i = 1; i <= 20; i++) {
-  const seed = `batch_game_${i}_seed_${Math.floor(Math.random() * 100000)}`;
+  const seed = `v02_sim_${i}_${Math.floor(Math.random() * 100000)}`;
   const game = new GameState(seed);
   game.startNewGame(seed);
-  game.godMode = false; // 正常胜负判定
+  game.godMode = false;
 
-  let turnsInGame = 0;
-  while (!game.isGameOver && game.turn <= 40 && turnsInGame < 50) {
-    turnsInGame++;
-    
-    // 启发式出牌策略模拟人类取舍：
-    // 优先处理场上严重的危机/局势，否则根据当前最低属性出牌
-    const hand = game.cardManager.hand;
-    const sits = game.situationManager.getActive();
-    const stats = game.stateManager.getStats();
+  let turns = 0;
+  while (!game.isGameOver && game.turn <= 40 && turns < 50) {
+    turns++;
 
+    // 启发式决策：优先寻找当前最高评级的应对
+    const hand = game.deckManager.hand;
     let chosenCard = hand[0];
     let chosenTarget = null;
+    let highestQualityScore = -10;
 
-    // 优先响应场上负面/危机局势
-    const crisis = sits.find(s => s.category === 'crisis') || sits.find(s => s.category === 'negative');
-    if (crisis) {
-      const responder = hand.find(c => {
-        if (c.targetTags && c.targetTags.some(t => crisis.responsiveTags.includes(t) || crisis.id === t)) return true;
-        if (c.tags && c.tags.some(t => crisis.responsiveTags.includes(t))) return true;
-        return false;
-      });
-      if (responder) {
-        chosenCard = responder;
-        chosenTarget = crisis.id;
+    for (const card of hand) {
+      const analysis = InteractionResolver.analyzeCardOptions(
+        card,
+        game.stateManager,
+        game.situationManager.getActive(),
+        game.policyManager,
+        game.residueManager
+      );
+
+      let score = 0;
+      if (analysis.bestQuality === 'excellent') score = 30;
+      else if (analysis.bestQuality === 'good') score = 20;
+      else if (analysis.bestQuality === 'weak') score = 5;
+      else score = 0;
+
+      // 如果目标是重大危机或高阶段局势，加分
+      if (analysis.autoTarget && analysis.autoTarget.stage >= 2) {
+        score += 15 * analysis.autoTarget.stage;
       }
-    } else {
-      // 缺啥补啥
-      const minStat = Object.entries(stats).sort((a, b) => a[1] - b[1])[0][0];
-      const helper = hand.find(c => {
-        if (minStat === 'treasury' && c.category === 'finance') return true;
-        if (minStat === 'morale' && c.category === 'livelihood') return true;
-        if (minStat === 'military' && c.category === 'military') return true;
-        if (minStat === 'court' && c.category === 'politics') return true;
-        return false;
-      });
-      if (helper) chosenCard = helper;
+
+      if (score > highestQualityScore) {
+        highestQualityScore = score;
+        chosenCard = card;
+        chosenTarget = analysis.autoTarget ? analysis.autoTarget.id : (analysis.validTargets[0] ? analysis.validTargets[0].id : null);
+      }
     }
 
-    game.selectedCardId = chosenCard.id;
-    game.selectedSituationId = chosenTarget;
-    game.playSelectedCard();
+    game.selectCard(chosenCard.id);
+    if (chosenTarget) game.selectedSituationId = chosenTarget;
+    const playRes = game.playSelectedCard();
 
-    // 偶尔选择保留一张有用的牌
-    if (game.cardManager.hand.length > 0 && Math.random() < 0.4) {
-      game.toggleKeepCard(game.cardManager.hand[0].id);
+    if (playRes) {
+      if (playRes.quality === 'excellent') totalExcellentPlays++;
+      else if (playRes.quality === 'good') totalGoodPlays++;
+      else totalWeakPlays++;
+    }
+
+    // 偶尔保留一张牌
+    if (game.deckManager.hand.length > 0 && Math.random() < 0.3) {
+      game.toggleKeepCard(game.deckManager.hand[0].id);
     }
 
     game.adjournCourt();
+
+    // 年度定策
+    if (game.phase === 'ANNUAL_POLICY') {
+      const opts = game.policyManager.pendingOptions || game.policyManager.generateDraftOptions();
+      game.applyAnnualPolicySelection(opts[0].id);
+    }
   }
 
-  totalTurnsAcrossGames += game.turn;
+  totalTurns += game.turn;
+  totalNeglectEscalationsAll += game.telemetryManager.totalNeglectEscalations;
 
   if (game.gameOutcome === 'victory') {
     victories++;
@@ -86,8 +103,10 @@ for (let i = 1; i <= 20; i++) {
   }
 }
 
-console.log('\n================ 20 局模拟统计结果 ================');
+console.log('\n================ Prototype 0.2 模拟统计结果 ================');
 console.log(`存活胜局: ${victories} / 20 (${(victories / 20 * 100).toFixed(1)}%)`);
 console.log(`倾覆败局: ${defeats} / 20 (${(defeats / 20 * 100).toFixed(1)}%)`);
-console.log(`平均存活季度: ${(totalTurnsAcrossGames / 20).toFixed(1)} 季`);
-console.log('主要灭亡原因分布:', defeatReasons);
+console.log(`平均存活季度: ${(totalTurns / 20).toFixed(1)} 季`);
+console.log(`总放任恶化次数: ${totalNeglectEscalationsAll} 次 (平均每局 ${(totalNeglectEscalationsAll / 20).toFixed(1)} 次)`);
+console.log(`出牌评级分布: 极有效(★): ${totalExcellentPlays}, 有效(▲): ${totalGoodPlays}, 勉强/通用: ${totalWeakPlays}`);
+console.log('失败灭亡原因分布:', defeatReasons);
